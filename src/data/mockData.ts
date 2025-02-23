@@ -33,6 +33,24 @@ export const vehicleModels: { [key: string]: VehicleModel[] } = {
     { name: 'E-Class', years: [2018, 2019, 2020, 2021, 2022, 2023] },
     { name: 'GLC', years: [2018, 2019, 2020, 2021, 2022, 2023] },
     { name: 'GLE', years: [2018, 2019, 2020, 2021, 2022, 2023] }
+  ],
+  'Volkswagen': [
+    { name: 'Golf', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Passat', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Tiguan', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Polo', years: [2018, 2019, 2020, 2021, 2022, 2023] }
+  ],
+  'Audi': [
+    { name: 'A4', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'A6', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Q5', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Q7', years: [2018, 2019, 2020, 2021, 2022, 2023] }
+  ],
+  'Porsche': [
+    { name: '911', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Cayenne', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Macan', years: [2018, 2019, 2020, 2021, 2022, 2023] },
+    { name: 'Panamera', years: [2018, 2019, 2020, 2021, 2022, 2023] }
   ]
 };
 
@@ -68,6 +86,36 @@ export const mockParts: Part[] = [
     transmissionType: 'Automatic 8-Speed',
     trimLevel: 'SE'
   },
+  {
+    id: '17',
+    name: 'Alternator',
+    category: 'Electrical',
+    model: 'Toyota Camry 2020',
+    price: 35000,
+    availability: 12,
+    supplier: 'AutoPro Parts',
+    location: 'Nairobi, Kenya',
+    deliveryTime: '2-3 days',
+    isLocal: true,
+    engineType: '2.5L 4-cylinder (A25A-FKS)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'SE'
+  },
+  {
+    id: '18',
+    name: 'Radiator',
+    category: 'Engine',
+    model: 'Toyota Camry 2020',
+    price: 28000,
+    availability: 8,
+    supplier: 'Parts Plus',
+    location: 'Nairobi, Kenya',
+    deliveryTime: '2-3 days',
+    isLocal: true,
+    engineType: '2.5L 4-cylinder (A25A-FKS)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'SE'
+  },
 
   // BMW 3 Series Parts
   {
@@ -93,6 +141,38 @@ export const mockParts: Part[] = [
     model: 'BMW 3 Series 2021',
     price: 4500,
     availability: 15,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '7-10 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '2.0L 4-cylinder (B48)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'M Sport'
+  },
+  {
+    id: '19',
+    name: 'Fuel Pump',
+    category: 'Engine',
+    model: 'BMW 3 Series 2021',
+    price: 45000,
+    availability: 6,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '10-14 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '2.0L 4-cylinder (B48)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'M Sport'
+  },
+  {
+    id: '20',
+    name: 'Ignition Coil Set',
+    category: 'Electrical',
+    model: 'BMW 3 Series 2021',
+    price: 28000,
+    availability: 10,
     supplier: 'Elite Auto Parts',
     location: 'Germany',
     deliveryTime: '7-10 days',
@@ -136,6 +216,38 @@ export const mockParts: Part[] = [
     transmissionType: 'Automatic 9-Speed',
     trimLevel: 'AMG Line'
   },
+  {
+    id: '21',
+    name: 'Transmission Filter Kit',
+    category: 'Transmission',
+    model: 'Mercedes-Benz C-Class 2022',
+    price: 18000,
+    availability: 12,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '7-10 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '2.0L 4-cylinder (M254)',
+    transmissionType: 'Automatic 9-Speed',
+    trimLevel: 'AMG Line'
+  },
+  {
+    id: '22',
+    name: 'Steering Rack',
+    category: 'Steering',
+    model: 'Mercedes-Benz C-Class 2022',
+    price: 95000,
+    availability: 4,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '14-21 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '2.0L 4-cylinder (M254)',
+    transmissionType: 'Automatic 9-Speed',
+    trimLevel: 'AMG Line'
+  },
 
   // Honda Civic Parts
   {
@@ -166,6 +278,36 @@ export const mockParts: Part[] = [
     isLocal: true,
     engineType: '1.5L Turbo',
     transmissionType: 'Manual 6-Speed',
+    trimLevel: 'Sport'
+  },
+  {
+    id: '23',
+    name: 'Wheel Bearing Kit',
+    category: 'Suspension',
+    model: 'Honda Civic 2021',
+    price: 12000,
+    availability: 18,
+    supplier: 'AutoPro Parts',
+    location: 'Nairobi, Kenya',
+    deliveryTime: '2-3 days',
+    isLocal: true,
+    engineType: '1.5L Turbo',
+    transmissionType: 'CVT',
+    trimLevel: 'Sport'
+  },
+  {
+    id: '24',
+    name: 'Starter Motor',
+    category: 'Electrical',
+    model: 'Honda Civic 2021',
+    price: 28000,
+    availability: 8,
+    supplier: 'Parts Plus',
+    location: 'Mombasa, Kenya',
+    deliveryTime: '3-4 days',
+    isLocal: true,
+    engineType: '1.5L Turbo',
+    transmissionType: 'CVT',
     trimLevel: 'Sport'
   },
 
@@ -200,6 +342,36 @@ export const mockParts: Part[] = [
     transmissionType: 'Automatic 6-Speed',
     trimLevel: 'VX'
   },
+  {
+    id: '25',
+    name: 'Turbocharger',
+    category: 'Engine',
+    model: 'Toyota Land Cruiser 2020',
+    price: 180000,
+    availability: 4,
+    supplier: 'AutoPro Parts',
+    location: 'Nairobi, Kenya',
+    deliveryTime: '3-4 days',
+    isLocal: true,
+    engineType: '4.5L V8 Diesel (1VD-FTV)',
+    transmissionType: 'Automatic 6-Speed',
+    trimLevel: 'VX'
+  },
+  {
+    id: '26',
+    name: 'Drive Shaft',
+    category: 'Transmission',
+    model: 'Toyota Land Cruiser 2020',
+    price: 85000,
+    availability: 6,
+    supplier: 'Parts Plus',
+    location: 'Mombasa, Kenya',
+    deliveryTime: '3-4 days',
+    isLocal: true,
+    engineType: '4.5L V8 Diesel (1VD-FTV)',
+    transmissionType: 'Automatic 6-Speed',
+    trimLevel: 'VX'
+  },
 
   // BMW 5 Series Parts
   {
@@ -228,6 +400,38 @@ export const mockParts: Part[] = [
     supplier: 'Elite Auto Parts',
     location: 'Germany',
     deliveryTime: '14-21 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '3.0L 6-cylinder (B58)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'M Sport'
+  },
+  {
+    id: '27',
+    name: 'Control Arm Kit',
+    category: 'Suspension',
+    model: 'BMW 5 Series 2022',
+    price: 65000,
+    availability: 8,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '10-14 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '3.0L 6-cylinder (B58)',
+    transmissionType: 'Automatic 8-Speed',
+    trimLevel: 'M Sport'
+  },
+  {
+    id: '28',
+    name: 'Valve Cover Gasket',
+    category: 'Engine',
+    model: 'BMW 5 Series 2022',
+    price: 15000,
+    availability: 12,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '7-10 days',
     isLocal: false,
     vinRequired: true,
     engineType: '3.0L 6-cylinder (B58)',
@@ -268,6 +472,38 @@ export const mockParts: Part[] = [
     transmissionType: 'Automatic 9-Speed',
     trimLevel: 'AMG Line'
   },
+  {
+    id: '29',
+    name: 'Air Compressor',
+    category: 'Suspension',
+    model: 'Mercedes-Benz E-Class 2021',
+    price: 75000,
+    availability: 6,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '14-21 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '3.0L 6-cylinder (M256)',
+    transmissionType: 'Automatic 9-Speed',
+    trimLevel: 'AMG Line'
+  },
+  {
+    id: '30',
+    name: 'Mass Air Flow Sensor',
+    category: 'Engine',
+    model: 'Mercedes-Benz E-Class 2021',
+    price: 32000,
+    availability: 10,
+    supplier: 'Elite Auto Parts',
+    location: 'Germany',
+    deliveryTime: '7-10 days',
+    isLocal: false,
+    vinRequired: true,
+    engineType: '3.0L 6-cylinder (M256)',
+    transmissionType: 'Automatic 9-Speed',
+    trimLevel: 'AMG Line'
+  },
 
   // Honda CR-V Parts
   {
@@ -292,6 +528,36 @@ export const mockParts: Part[] = [
     model: 'Honda CR-V 2022',
     price: 35000,
     availability: 8,
+    supplier: 'Parts Plus',
+    location: 'Mombasa, Kenya',
+    deliveryTime: '3-4 days',
+    isLocal: true,
+    engineType: '1.5L Turbo',
+    transmissionType: 'CVT',
+    trimLevel: 'EX-L'
+  },
+  {
+    id: '31',
+    name: 'Oxygen Sensor',
+    category: 'Engine',
+    model: 'Honda CR-V 2022',
+    price: 12500,
+    availability: 15,
+    supplier: 'AutoPro Parts',
+    location: 'Nairobi, Kenya',
+    deliveryTime: '2-3 days',
+    isLocal: true,
+    engineType: '1.5L Turbo',
+    transmissionType: 'CVT',
+    trimLevel: 'EX-L'
+  },
+  {
+    id: '32',
+    name: 'Strut Assembly',
+    category: 'Suspension',
+    model: 'Honda CR-V 2022',
+    price: 45000,
+    availability: 10,
     supplier: 'Parts Plus',
     location: 'Mombasa, Kenya',
     deliveryTime: '3-4 days',

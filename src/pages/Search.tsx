@@ -11,10 +11,16 @@ const Search: React.FC = () => {
   const [filters, setFilters] = useState<SearchFiltersType>({});
   const [vehicleSelected, setVehicleSelected] = useState(false);
   const [selectedVehicle, setSelectedVehicle] = useState<VehicleSelection | null>(null);
+  const [isChangingVehicle, setIsChangingVehicle] = useState(false);
 
   const handleVehicleSelection = (selection: VehicleSelection) => {
     setSelectedVehicle(selection);
     setVehicleSelected(true);
+    setIsChangingVehicle(false);
+  };
+
+  const handleChangeVehicle = () => {
+    setIsChangingVehicle(true);
   };
 
   const filteredParts = mockParts.filter(part => {
@@ -54,8 +60,13 @@ const Search: React.FC = () => {
            matchesPriceRange;
   });
 
-  if (!vehicleSelected) {
-    return <VehicleWizard onComplete={handleVehicleSelection} />;
+  if (!vehicleSelected || isChangingVehicle) {
+    return (
+      <VehicleWizard 
+        onComplete={handleVehicleSelection} 
+        initialSelection={isChangingVehicle ? selectedVehicle : undefined}
+      />
+    );
   }
 
   return (
@@ -73,7 +84,7 @@ const Search: React.FC = () => {
             {selectedVehicle?.vin && <p>VIN: {selectedVehicle.vin}</p>}
           </div>
           <button
-            onClick={() => setVehicleSelected(false)}
+            onClick={handleChangeVehicle}
             className="mt-4 text-sm text-primary hover:text-primary/80"
           >
             Change Vehicle

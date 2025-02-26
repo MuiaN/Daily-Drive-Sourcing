@@ -10,6 +10,8 @@ interface Props {
 
 const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
   const [vin, setVin] = useState('');
+  const [partNumber, setPartNumber] = useState('');
+  const [engineNumber, setEngineNumber] = useState('');
   const [selection, setSelection] = useState<VehicleSelection>(initialSelection || {});
   const [showManualSearch, setShowManualSearch] = useState(false);
   const [vinError, setVinError] = useState('');
@@ -31,6 +33,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: '3 Series',
       year: 2019,
       engineType: '2.0L 4-cylinder (B48)',
+      engineNumber: 'B48B20B',
       transmissionType: 'Automatic 8-Speed',
       trimLevel: 'Sport Line'
     },
@@ -39,6 +42,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: 'C-Class',
       year: 2021,
       engineType: '2.0L 4-cylinder (M254)',
+      engineNumber: 'M254E20',
       transmissionType: 'Automatic 9-Speed',
       trimLevel: 'AMG Line'
     },
@@ -47,6 +51,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: 'Golf',
       year: 2020,
       engineType: '2.0L 4-cylinder (EA888)',
+      engineNumber: 'EA888Gen3B',
       transmissionType: 'DSG 7-Speed',
       trimLevel: 'R-Line'
     },
@@ -56,6 +61,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: 'Land Cruiser',
       year: 2020,
       engineType: '4.5L V8 Diesel (1VD-FTV)',
+      engineNumber: '1VD0269652',
       transmissionType: 'Automatic 6-Speed',
       trimLevel: 'VX'
     },
@@ -64,6 +70,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: 'X-Trail',
       year: 2022,
       engineType: '2.5L 4-cylinder (QR25DE)',
+      engineNumber: 'QR25DE123456',
       transmissionType: 'CVT',
       trimLevel: 'Tekna'
     },
@@ -72,47 +79,108 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       model: 'CR-V',
       year: 2021,
       engineType: '1.5L VTEC Turbo',
+      engineNumber: 'L15BE123456',
       transmissionType: 'CVT',
       trimLevel: 'EX-L'
-    },
-    // Korean Cars
-    'KMHXX00XXNU123456': {
-      make: 'Hyundai',
-      model: 'Tucson',
-      year: 2022,
-      engineType: '2.0L 4-cylinder',
-      transmissionType: 'Automatic 8-Speed',
-      trimLevel: 'Ultimate'
-    },
-    'U5YPK81AANU123456': {
-      make: 'Kia',
-      model: 'Sportage',
-      year: 2023,
-      engineType: '1.6L Turbo GDI',
-      transmissionType: 'DCT 7-Speed',
-      trimLevel: 'GT-Line'
     }
   };
 
-  const handleVinSearch = () => {
-    setVinError('');
-    const normalizedVin = vin.toUpperCase().trim();
-    
-    // Check if VIN exists in mock data
-    const vinData = mockVinData[normalizedVin];
-    if (vinData) {
-      setSelection({
-        ...vinData,
-        vin: normalizedVin
-      });
-      onComplete({
-        ...vinData,
-        vin: normalizedVin
-      });
-    } else {
-      setVinError('Vehicle not found. Please try manual search.');
-      setShowManualSearch(true);
+  // Mock part number lookup data
+  const mockPartData = {
+    'BMW-11428507683': {
+      make: 'BMW',
+      model: '3 Series',
+      year: 2019,
+      engineType: '2.0L 4-cylinder (B48)',
+      engineNumber: 'B48B20B',
+      transmissionType: 'Automatic 8-Speed',
+      trimLevel: 'Sport Line'
+    },
+    'MB-A2780160101': {
+      make: 'Mercedes-Benz',
+      model: 'C-Class',
+      year: 2021,
+      engineType: '2.0L 4-cylinder (M254)',
+      engineNumber: 'M254E20',
+      transmissionType: 'Automatic 9-Speed',
+      trimLevel: 'AMG Line'
     }
+  };
+
+  // Mock engine number lookup data
+  const mockEngineData = {
+    'B48B20B': {
+      make: 'BMW',
+      model: '3 Series',
+      year: 2019,
+      engineType: '2.0L 4-cylinder (B48)',
+      transmissionType: 'Automatic 8-Speed',
+      trimLevel: 'Sport Line'
+    },
+    'M254E20': {
+      make: 'Mercedes-Benz',
+      model: 'C-Class',
+      year: 2021,
+      engineType: '2.0L 4-cylinder (M254)',
+      transmissionType: 'Automatic 9-Speed',
+      trimLevel: 'AMG Line'
+    }
+  };
+
+  const handleSearch = () => {
+    setVinError('');
+    let foundData = null;
+
+    if (vin) {
+      const normalizedVin = vin.toUpperCase().trim();
+      foundData = mockVinData[normalizedVin];
+      if (foundData) {
+        setSelection({
+          ...foundData,
+          vin: normalizedVin
+        });
+        onComplete({
+          ...foundData,
+          vin: normalizedVin
+        });
+        return;
+      }
+    }
+
+    if (partNumber) {
+      const normalizedPartNumber = partNumber.toUpperCase().trim();
+      foundData = mockPartData[normalizedPartNumber];
+      if (foundData) {
+        setSelection({
+          ...foundData,
+          partNumber: normalizedPartNumber
+        });
+        onComplete({
+          ...foundData,
+          partNumber: normalizedPartNumber
+        });
+        return;
+      }
+    }
+
+    if (engineNumber) {
+      const normalizedEngineNumber = engineNumber.toUpperCase().trim();
+      foundData = mockEngineData[normalizedEngineNumber];
+      if (foundData) {
+        setSelection({
+          ...foundData,
+          engineNumber: normalizedEngineNumber
+        });
+        onComplete({
+          ...foundData,
+          engineNumber: normalizedEngineNumber
+        });
+        return;
+      }
+    }
+
+    setVinError('Vehicle not found. Please try manual search.');
+    setShowManualSearch(true);
   };
 
   const handleManualSearch = () => {
@@ -135,22 +203,6 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
     'BMW': {
       '3 Series': ['2.0L 4-cylinder (B48)', '3.0L 6-cylinder (B58)'],
       '5 Series': ['2.0L 4-cylinder (B48)', '3.0L 6-cylinder (B58)', '4.4L V8 (N63)']
-    },
-    'Mercedes-Benz': {
-      'C-Class': ['2.0L 4-cylinder (M254)', '3.0L 6-cylinder (M256)'],
-      'E-Class': ['2.0L 4-cylinder (M254)', '3.0L 6-cylinder (M256)', '4.0L V8 (M177)']
-    },
-    'Volkswagen': {
-      'Golf': ['1.4L TSI', '2.0L TSI', '2.0L TDI'],
-      'Tiguan': ['1.4L TSI', '2.0L TSI', '2.0L TDI']
-    },
-    'Honda': {
-      'CR-V': ['1.5L VTEC Turbo', '2.0L i-VTEC', '2.0L i-MMD Hybrid'],
-      'Civic': ['1.5L VTEC Turbo', '2.0L i-VTEC']
-    },
-    'Nissan': {
-      'X-Trail': ['2.5L 4-cylinder (QR25DE)', '2.0L VC-Turbo'],
-      'Qashqai': ['1.3L DiG-T', '1.5L dCi']
     }
   };
 
@@ -161,8 +213,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
     'Automatic 6-Speed',
     'CVT',
     'DCT 7-Speed',
-    'DSG 7-Speed',
-    'AMT (Automated Manual)'
+    'DSG 7-Speed'
   ];
 
   const mockTrimLevels = {
@@ -173,22 +224,6 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
     'BMW': {
       '3 Series': ['Sport Line', 'M Sport', 'Luxury Line'],
       '5 Series': ['Sport Line', 'M Sport', 'Luxury Line']
-    },
-    'Mercedes-Benz': {
-      'C-Class': ['Avantgarde', 'AMG Line', 'Exclusive'],
-      'E-Class': ['Avantgarde', 'AMG Line', 'Exclusive']
-    },
-    'Volkswagen': {
-      'Golf': ['Life', 'Style', 'R-Line'],
-      'Tiguan': ['Life', 'Elegance', 'R-Line']
-    },
-    'Honda': {
-      'CR-V': ['LX', 'Sport', 'EX', 'EX-L', 'Touring'],
-      'Civic': ['LX', 'Sport', 'EX', 'Touring']
-    },
-    'Nissan': {
-      'X-Trail': ['Visia', 'Acenta', 'N-Connecta', 'Tekna'],
-      'Qashqai': ['Visia', 'Acenta', 'N-Connecta', 'Tekna']
     }
   };
 
@@ -211,7 +246,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
       <div className="space-y-6">
         <div>
           <h3 className="text-lg font-semibold mb-4 text-card-foreground flex items-center justify-between">
-            <span>Enter {isGermanBrand(selection.make || '') ? 'VIN' : 'Chassis'} Number</span>
+            <span>Search by {isGermanBrand(selection.make || '') ? 'VIN' : 'Chassis'} Number, Part Number, or Engine Number</span>
             {initialSelection && (
               <button
                 onClick={() => onComplete(initialSelection)}
@@ -223,18 +258,36 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
             )}
           </h3>
           <div className="space-y-4">
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <input
                 type="text"
-                className="flex-1 p-2 rounded-lg border border-input bg-background text-foreground"
-                placeholder="Enter VIN/Chassis number"
+                className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                placeholder={`Enter ${isGermanBrand(selection.make || '') ? 'VIN' : 'Chassis'} number`}
                 maxLength={17}
                 value={vin}
                 onChange={(e) => setVin(e.target.value.toUpperCase())}
               />
+              <div className="text-center text-sm text-muted-foreground">or</div>
+              <input
+                type="text"
+                className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                placeholder="Enter part number"
+                value={partNumber}
+                onChange={(e) => setPartNumber(e.target.value.toUpperCase())}
+              />
+              <div className="text-center text-sm text-muted-foreground">or</div>
+              <input
+                type="text"
+                className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                placeholder="Enter engine number"
+                value={engineNumber}
+                onChange={(e) => setEngineNumber(e.target.value.toUpperCase())}
+              />
+            </div>
+            <div className="flex justify-center">
               <button
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-lg flex items-center gap-2"
-                onClick={handleVinSearch}
+                onClick={handleSearch}
               >
                 <Search className="h-4 w-4" />
                 Search

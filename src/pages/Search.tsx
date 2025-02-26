@@ -3,7 +3,7 @@ import { Search as SearchIcon } from 'lucide-react';
 import SearchFilters from '../components/SearchFilters';
 import PartCard from '../components/PartCard';
 import VehicleWizard from '../components/VehicleWizard';
-import { mockParts } from '../data/mockData';
+import { mockParts, vehicleImages } from '../data/mockData';
 import { SearchFilters as SearchFiltersType, VehicleSelection } from '../types';
 
 const Search: React.FC = () => {
@@ -23,6 +23,12 @@ const Search: React.FC = () => {
     setIsChangingVehicle(true);
   };
 
+  const getVehicleImage = () => {
+    if (!selectedVehicle?.make || !selectedVehicle?.model || !selectedVehicle?.year) return null;
+    const key = `${selectedVehicle.make} ${selectedVehicle.model} ${selectedVehicle.year}`;
+    return vehicleImages[key];
+  };
+
   const filteredParts = mockParts.filter(part => {
     if (!vehicleSelected) return false;
 
@@ -35,6 +41,10 @@ const Search: React.FC = () => {
     const matchesEngine = !selectedVehicle?.engineType || 
       part.engineType === selectedVehicle.engineType;
 
+    // Match engine number if specified
+    const matchesEngineNumber = !selectedVehicle?.engineNumber ||
+      part.engineNumber === selectedVehicle.engineNumber;
+
     // Match transmission type if specified
     const matchesTransmission = !selectedVehicle?.transmissionType || 
       part.transmissionType === selectedVehicle.transmissionType;
@@ -45,7 +55,9 @@ const Search: React.FC = () => {
 
     // Match search term
     const matchesSearch = searchTerm === '' || 
-      part.name.toLowerCase().includes(searchTerm.toLowerCase());
+      part.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (part.partNumber && part.partNumber.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (part.engineNumber && part.engineNumber.toLowerCase().includes(searchTerm.toLowerCase()));
 
     // Match filters
     const matchesCategory = !filters.category || part.category === filters.category;
@@ -55,9 +67,9 @@ const Search: React.FC = () => {
       (!filters.priceRange.min || part.price >= filters.priceRange.min) &&
       (!filters.priceRange.max || part.price <= filters.priceRange.max);
 
-    return matchesVehicle && matchesEngine && matchesTransmission && matchesTrim &&
-           matchesSearch && matchesCategory && matchesLocation && matchesSupplier && 
-           matchesPriceRange;
+    return matchesVehicle && matchesEngine && matchesEngineNumber && matchesTransmission && 
+           matchesTrim && matchesSearch && matchesCategory && matchesLocation && 
+           matchesSupplier && matchesPriceRange;
   });
 
   if (!vehicleSelected || isChangingVehicle) {
@@ -69,16 +81,28 @@ const Search: React.FC = () => {
     );
   }
 
+  const vehicleImage = getVehicleImage();
+
   return (
     <div className="grid grid-cols-4 gap-6">
       <div className="col-span-1">
         <div className="bg-card p-4 rounded-lg shadow mb-6 border border-border">
-          <h3 className="font-semibold text-lg mb-2">Selected Vehicle</h3>
+          <h3 className="font-semibold text-lg mb-4">Selected Vehicle</h3>
+          {vehicleImage && (
+            <div className="aspect-video rounded-lg overflow-hidden mb-4">
+              <img
+                src={vehicleImage}
+                alt={`${selectedVehicle?.make} ${selectedVehicle?.model}`}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
           <div className="text-sm text-muted-foreground">
             <p>Make: {selectedVehicle?.make}</p>
             <p>Model: {selectedVehicle?.model}</p>
             <p>Year: {selectedVehicle?.year}</p>
             <p>Engine: {selectedVehicle?.engineType}</p>
+            <p>Engine Number: {selectedVehicle?.engineNumber}</p>
             <p>Transmission: {selectedVehicle?.transmissionType}</p>
             <p>Trim: {selectedVehicle?.trimLevel}</p>
             {selectedVehicle?.vin && <p>VIN: {selectedVehicle.vin}</p>}
@@ -99,7 +123,7 @@ const Search: React.FC = () => {
             <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
             <input
               type="text"
-              placeholder="Search parts by name..."
+              placeholder="Search parts by name, part number, or engine number..."
               className="w-full pl-10 pr-4 py-2 border border-input bg-background text-foreground rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

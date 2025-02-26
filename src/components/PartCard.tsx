@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Package, Clock, MapPin, Globe, Info } from 'lucide-react';
+import { Package, Clock, MapPin, Globe, Info, Hash, Cpu } from 'lucide-react';
 import { Part } from '../types';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
@@ -30,6 +30,15 @@ const PartCard: React.FC<Props> = ({ part }) => {
   return (
     <>
       <div className="bg-card rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow border border-border">
+        {part.image && (
+          <div className="mb-4 aspect-video rounded-lg overflow-hidden">
+            <img
+              src={part.image}
+              alt={part.name}
+              className="w-full h-full object-cover"
+            />
+          </div>
+        )}
         <div className="flex justify-between items-start">
           <div>
             <h3 className="text-lg font-semibold text-card-foreground">{part.name}</h3>
@@ -41,6 +50,18 @@ const PartCard: React.FC<Props> = ({ part }) => {
         </div>
         
         <div className="mt-4 space-y-2">
+          {part.partNumber && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Hash className="h-4 w-4 mr-2" />
+              <span>Part Number: {part.partNumber}</span>
+            </div>
+          )}
+          {part.engineNumber && (
+            <div className="flex items-center text-sm text-muted-foreground">
+              <Cpu className="h-4 w-4 mr-2" />
+              <span>Engine Number: {part.engineNumber}</span>
+            </div>
+          )}
           <div className="flex items-center text-sm text-muted-foreground">
             <Package className="h-4 w-4 mr-2" />
             <span>{part.availability} units available</span>

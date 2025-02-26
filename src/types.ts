@@ -11,8 +11,11 @@ export interface Part {
   isLocal: boolean;
   vinRequired?: boolean;
   engineType?: string;
+  engineNumber?: string;
+  partNumber?: string;
   transmissionType?: string;
   trimLevel?: string;
+  image?: string;
 }
 
 export interface User {
@@ -36,6 +39,7 @@ export interface Vehicle {
   series?: string;
   vinRequired: boolean;
   engineType?: string;
+  engineNumber?: string;
   transmissionType?: string;
   trimLevel?: string;
 }
@@ -47,6 +51,7 @@ export interface VehicleSelection {
   series?: string;
   vin?: string;
   engineType?: string;
+  engineNumber?: string;
   transmissionType?: string;
   trimLevel?: string;
 }

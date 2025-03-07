@@ -86,6 +86,11 @@ const PartCard: React.FC<Props> = ({ part }) => {
               {part.engineType} • {part.transmissionType} • {part.trimLevel}
             </span>
           </div>
+          {part.description && (
+            <div className="text-sm text-muted-foreground mt-2 border-t border-border pt-2">
+              {part.description}
+            </div>
+          )}
         </div>
         
         <div className="mt-4 flex justify-between items-center">

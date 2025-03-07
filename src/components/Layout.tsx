@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, Outlet } from 'react-router-dom';
-import { Car, Search, Bell, User, Package, ShoppingCart } from 'lucide-react';
+import { Car, Bell, User, Package, ShoppingCart } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import AuthModal from './AuthModal';
 import { useAuthStore } from '../store/authStore';
@@ -25,8 +25,8 @@ const Layout: React.FC = () => {
             </div>
             
             <div className="flex items-center space-x-4">
-              <Link to="/search" className="p-2 text-muted-foreground hover:text-foreground">
-                <Search className="h-6 w-6" />
+              <Link to="/parts" className="p-2 text-muted-foreground hover:text-foreground">
+                <Car className="h-6 w-6" />
               </Link>
               <Link to="/orders" className="p-2 text-muted-foreground hover:text-foreground">
                 <Package className="h-6 w-6" />

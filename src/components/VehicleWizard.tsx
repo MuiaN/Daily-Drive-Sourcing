@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle, Search, ArrowLeft } from 'lucide-react';
 import { VehicleSelection } from '../types';
 import { vehicleModels } from '../data/mockData';
+import { diagramsMap } from '../data/mockDiagramData';
 
 interface Props {
   onComplete: (selection: VehicleSelection) => void;
@@ -25,155 +26,86 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
     }
   }, [initialSelection]);
 
-  // Mock VIN/Chassis lookup data
-  const mockVinData = {
-    // German Cars
-    'WBAJB1C51KB375143': {
-      make: 'BMW',
-      model: '3 Series',
-      year: 2019,
-      engineType: '2.0L 4-cylinder (B48)',
-      engineNumber: 'B48B20B',
-      transmissionType: 'Automatic 8-Speed',
-      trimLevel: 'Sport Line'
-    },
-    'WDD2130421A123456': {
-      make: 'Mercedes-Benz',
-      model: 'C-Class',
-      year: 2021,
-      engineType: '2.0L 4-cylinder (M254)',
-      engineNumber: 'M254E20',
-      transmissionType: 'Automatic 9-Speed',
-      trimLevel: 'AMG Line'
-    },
-    'WVWZZZ1KZAW123456': {
-      make: 'Volkswagen',
-      model: 'Golf',
-      year: 2020,
-      engineType: '2.0L 4-cylinder (EA888)',
-      engineNumber: 'EA888Gen3B',
-      transmissionType: 'DSG 7-Speed',
-      trimLevel: 'R-Line'
-    },
-    // Japanese Cars
-    'JT3HN86R0Y0269652': {
-      make: 'Toyota',
-      model: 'Land Cruiser',
-      year: 2020,
-      engineType: '4.5L V8 Diesel (1VD-FTV)',
-      engineNumber: '1VD0269652',
-      transmissionType: 'Automatic 6-Speed',
-      trimLevel: 'VX'
-    },
-    'JN1TBNT32U0123456': {
-      make: 'Nissan',
-      model: 'X-Trail',
-      year: 2022,
-      engineType: '2.5L 4-cylinder (QR25DE)',
-      engineNumber: 'QR25DE123456',
-      transmissionType: 'CVT',
-      trimLevel: 'Tekna'
-    },
-    'JHMGK5H59MC123456': {
-      make: 'Honda',
-      model: 'CR-V',
-      year: 2021,
-      engineType: '1.5L VTEC Turbo',
-      engineNumber: 'L15BE123456',
-      transmissionType: 'CVT',
-      trimLevel: 'EX-L'
+  // Find part in diagrams
+  const findPartInDiagrams = (searchValue: string): VehicleSelection | null => {
+    for (const [make, models] of Object.entries(diagramsMap)) {
+      for (const [model, types] of Object.entries(models)) {
+        for (const [type, units] of Object.entries(types)) {
+          for (const [unit, diagram] of Object.entries(units)) {
+            const foundPart = diagram.parts.find(part => 
+              part.partNumber === searchValue || 
+              (part as any).engineNumber === searchValue
+            );
+            
+            if (foundPart) {
+              return {
+                make,
+                model,
+                partNumber: foundPart.partNumber,
+                engineNumber: (foundPart as any).engineNumber,
+                engineType: (foundPart as any).engineType,
+                transmissionType: (foundPart as any).transmissionType,
+                trimLevel: (foundPart as any).trimLevel
+              };
+            }
+          }
+        }
+      }
     }
-  };
-
-  // Mock part number lookup data
-  const mockPartData = {
-    'BMW-11428507683': {
-      make: 'BMW',
-      model: '3 Series',
-      year: 2019,
-      engineType: '2.0L 4-cylinder (B48)',
-      engineNumber: 'B48B20B',
-      transmissionType: 'Automatic 8-Speed',
-      trimLevel: 'Sport Line'
-    },
-    'MB-A2780160101': {
-      make: 'Mercedes-Benz',
-      model: 'C-Class',
-      year: 2021,
-      engineType: '2.0L 4-cylinder (M254)',
-      engineNumber: 'M254E20',
-      transmissionType: 'Automatic 9-Speed',
-      trimLevel: 'AMG Line'
-    }
-  };
-
-  // Mock engine number lookup data
-  const mockEngineData = {
-    'B48B20B': {
-      make: 'BMW',
-      model: '3 Series',
-      year: 2019,
-      engineType: '2.0L 4-cylinder (B48)',
-      transmissionType: 'Automatic 8-Speed',
-      trimLevel: 'Sport Line'
-    },
-    'M254E20': {
-      make: 'Mercedes-Benz',
-      model: 'C-Class',
-      year: 2021,
-      engineType: '2.0L 4-cylinder (M254)',
-      transmissionType: 'Automatic 9-Speed',
-      trimLevel: 'AMG Line'
-    }
+    return null;
   };
 
   const handleSearch = () => {
     setVinError('');
     let foundData = null;
 
-    if (vin) {
-      const normalizedVin = vin.toUpperCase().trim();
-      foundData = mockVinData[normalizedVin];
-      if (foundData) {
-        setSelection({
-          ...foundData,
-          vin: normalizedVin
-        });
-        onComplete({
-          ...foundData,
-          vin: normalizedVin
-        });
-        return;
-      }
-    }
-
+    // Search by part number
     if (partNumber) {
       const normalizedPartNumber = partNumber.toUpperCase().trim();
-      foundData = mockPartData[normalizedPartNumber];
+      foundData = findPartInDiagrams(normalizedPartNumber);
       if (foundData) {
-        setSelection({
-          ...foundData,
-          partNumber: normalizedPartNumber
-        });
-        onComplete({
-          ...foundData,
-          partNumber: normalizedPartNumber
-        });
+        setSelection(foundData);
+        onComplete(foundData);
         return;
       }
     }
 
+    // Search by engine number
     if (engineNumber) {
       const normalizedEngineNumber = engineNumber.toUpperCase().trim();
-      foundData = mockEngineData[normalizedEngineNumber];
+      foundData = findPartInDiagrams(normalizedEngineNumber);
+      if (foundData) {
+        setSelection(foundData);
+        onComplete(foundData);
+        return;
+      }
+    }
+
+    // Search by VIN/Chassis number
+    if (vin) {
+      const normalizedVin = vin.toUpperCase().trim();
+      // Example VINs for the suspension diagram parts:
+      const vinMap = {
+        'WBAJB1C51KB375143': {
+          make: 'BMW',
+          model: '3 Series',
+          year: 2019,
+          engineType: '2.0L 4-cylinder (B48)',
+          engineNumber: 'B48B20B',
+          transmissionType: 'Automatic 8-Speed',
+          trimLevel: 'Sport Line'
+        }
+      };
+
+      foundData = vinMap[normalizedVin];
       if (foundData) {
         setSelection({
           ...foundData,
-          engineNumber: normalizedEngineNumber
+          vin: normalizedVin
         });
         onComplete({
           ...foundData,
-          engineNumber: normalizedEngineNumber
+          vin: normalizedVin
         });
         return;
       }
@@ -196,13 +128,8 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
   const availableYears = selectedModel?.years || [];
 
   const mockEngineTypes = {
-    'Toyota': {
-      'Camry': ['2.5L 4-cylinder (A25A-FKS)', '3.5L V6 (2GR-FKS)'],
-      'Land Cruiser': ['4.5L V8 Diesel (1VD-FTV)', '4.6L V8 Petrol (1UR-FE)']
-    },
     'BMW': {
-      '3 Series': ['2.0L 4-cylinder (B48)', '3.0L 6-cylinder (B58)'],
-      '5 Series': ['2.0L 4-cylinder (B48)', '3.0L 6-cylinder (B58)', '4.4L V8 (N63)']
+      '3 Series': ['2.0L 4-cylinder (B48)', '3.0L 6-cylinder (B58)']
     }
   };
 
@@ -210,20 +137,12 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
     'Manual 6-Speed',
     'Automatic 8-Speed',
     'Automatic 9-Speed',
-    'Automatic 6-Speed',
-    'CVT',
-    'DCT 7-Speed',
     'DSG 7-Speed'
   ];
 
   const mockTrimLevels = {
-    'Toyota': {
-      'Camry': ['LE', 'SE', 'XLE', 'XSE', 'TRD'],
-      'Land Cruiser': ['GX', 'VX', 'ZX']
-    },
     'BMW': {
-      '3 Series': ['Sport Line', 'M Sport', 'Luxury Line'],
-      '5 Series': ['Sport Line', 'M Sport', 'Luxury Line']
+      '3 Series': ['Sport Line', 'M Sport', 'Luxury Line']
     }
   };
 
@@ -271,7 +190,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
               <input
                 type="text"
                 className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
-                placeholder="Enter part number"
+                placeholder="Enter part number (e.g., BMW-31216765423)"
                 value={partNumber}
                 onChange={(e) => setPartNumber(e.target.value.toUpperCase())}
               />
@@ -279,7 +198,7 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
               <input
                 type="text"
                 className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
-                placeholder="Enter engine number"
+                placeholder="Enter engine number (e.g., B48B20B)"
                 value={engineNumber}
                 onChange={(e) => setEngineNumber(e.target.value.toUpperCase())}
               />

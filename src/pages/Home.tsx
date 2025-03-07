@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Search, TrendingUp, Clock, Shield, ArrowRight } from 'lucide-react';
+import { Car, TrendingUp, Clock, Shield, ArrowRight } from 'lucide-react';
 
 const Home: React.FC = () => {
   return (
@@ -10,15 +10,17 @@ const Home: React.FC = () => {
           Find the Right Auto Parts, Right Now
         </h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Real-time inventory from trusted suppliers worldwide
+          Use our interactive part finder to locate exact parts for your vehicle
         </p>
-        <Link
-          to="/search"
-          className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
-        >
-          <Search className="h-5 w-5 mr-2" />
-          Start Searching
-        </Link>
+        <div className="flex justify-center">
+          <Link
+            to="/parts"
+            className="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            <Car className="h-5 w-5 mr-2" />
+            Interactive Parts Finder
+          </Link>
+        </div>
       </section>
 
       <section className="grid md:grid-cols-3 gap-8">
@@ -52,9 +54,9 @@ const Home: React.FC = () => {
             <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
               <span className="text-primary font-bold">1</span>
             </div>
-            <h4 className="font-semibold mb-2 text-card-foreground">Search</h4>
+            <h4 className="font-semibold mb-2 text-card-foreground">Select Vehicle</h4>
             <p className="text-muted-foreground text-sm">
-              Enter part details or browse categories
+              Enter your VIN, part number, or select vehicle details
             </p>
           </div>
           <ArrowRight className="absolute left-[22%] top-[10%] text-primary h-8 w-8 hidden md:block" />
@@ -62,9 +64,9 @@ const Home: React.FC = () => {
             <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
               <span className="text-primary font-bold">2</span>
             </div>
-            <h4 className="font-semibold mb-2 text-card-foreground">Compare</h4>
+            <h4 className="font-semibold mb-2 text-card-foreground">Choose Body Type</h4>
             <p className="text-muted-foreground text-sm">
-              View prices and availability
+              Select your vehicle's body style
             </p>
           </div>
           <ArrowRight className="absolute left-[47%] top-[10%] text-primary h-8 w-8 hidden md:block" />
@@ -72,9 +74,9 @@ const Home: React.FC = () => {
             <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
               <span className="text-primary font-bold">3</span>
             </div>
-            <h4 className="font-semibold mb-2 text-card-foreground">Order</h4>
+            <h4 className="font-semibold mb-2 text-card-foreground">Select Part Category</h4>
             <p className="text-muted-foreground text-sm">
-              Select your preferred supplier
+              Choose the system or category of parts
             </p>
           </div>
           <ArrowRight className="absolute left-[72%] top-[10%] text-primary h-8 w-8 hidden md:block" />
@@ -82,9 +84,9 @@ const Home: React.FC = () => {
             <div className="bg-primary/10 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
               <span className="text-primary font-bold">4</span>
             </div>
-            <h4 className="font-semibold mb-2 text-card-foreground">Track</h4>
+            <h4 className="font-semibold mb-2 text-card-foreground">Find Your Part</h4>
             <p className="text-muted-foreground text-sm">
-              Monitor delivery progress
+              Use the interactive diagram to select your exact part
             </p>
           </div>
         </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { SearchFilters } from '../types';
 import { categories, suppliers, locations } from '../data/mockData';
+import { FlagOff } from 'lucide-react';
 
 interface Props {
   filters: SearchFilters;
@@ -15,7 +16,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ filters, onFilterChange }) =>
         <div>
           <label className="block text-sm font-medium text-foreground">Category</label>
           <select
-            className="mt-1 block w-full rounded-md border border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
+            className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
             value={filters.category}
             onChange={(e) => onFilterChange({ ...filters, category: e.target.value })}
           >
@@ -31,7 +32,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ filters, onFilterChange }) =>
           <div className="flex space-x-2">
             <input
               type="number"
-              className="mt-1 block w-full rounded-md border border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
+              className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
               placeholder="Min"
               value={filters.priceRange?.min || ''}
               onChange={(e) => onFilterChange({
@@ -41,7 +42,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ filters, onFilterChange }) =>
             />
             <input
               type="number"
-              className="mt-1 block w-full rounded-md border border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
+              className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
               placeholder="Max"
               value={filters.priceRange?.max || ''}
               onChange={(e) => onFilterChange({
@@ -55,7 +56,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ filters, onFilterChange }) =>
         <div>
           <label className="block text-sm font-medium text-foreground">Location</label>
           <select
-            className="mt-1 block w-full rounded-md border border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
+            className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
             value={filters.location}
             onChange={(e) => onFilterChange({ ...filters, location: e.target.value })}
           >
@@ -69,7 +70,7 @@ const SearchFiltersComponent: React.FC<Props> = ({ filters, onFilterChange }) =>
         <div>
           <label className="block text-sm font-medium text-foreground">Supplier</label>
           <select
-            className="mt-1 block w-full rounded-md border border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
+            className="mt-1 block w-full rounded-md border-input bg-background text-foreground shadow-sm focus:border-primary focus:ring-primary"
             value={filters.supplier}
             onChange={(e) => onFilterChange({ ...filters, supplier: e.target.value })}
           >

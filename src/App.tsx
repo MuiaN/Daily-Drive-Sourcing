@@ -2,11 +2,11 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
-import Search from './pages/Search';
 import Orders from './pages/Orders';
 import Notifications from './pages/Notifications';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
+import PartSelector from './pages/PartSelector';
 import { useAuthStore } from './store/authStore';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -29,7 +29,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
-          <Route path="search" element={<Search />} />
+          <Route path="parts" element={<PartSelector />} />
           <Route path="cart" element={<Cart />} />
           <Route
             path="orders"

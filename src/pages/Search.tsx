@@ -32,7 +32,22 @@ const Search: React.FC = () => {
   const filteredParts = mockParts.filter(part => {
     if (!vehicleSelected) return false;
 
-    // Match vehicle details
+    // If searching by part number, only show exact match
+    if (selectedVehicle?.partNumber) {
+      return part.partNumber === selectedVehicle.partNumber;
+    }
+
+    // If searching by engine number, only show parts with that engine number
+    if (selectedVehicle?.engineNumber && !selectedVehicle.vin) {
+      return part.engineNumber === selectedVehicle.engineNumber;
+    }
+
+    // If searching by VIN, show all parts for that vehicle
+    if (selectedVehicle?.vin) {
+      return part.vin === selectedVehicle.vin;
+    }
+
+    // Otherwise, match vehicle details
     const matchesVehicle = 
       part.model.toLowerCase().includes(selectedVehicle?.make?.toLowerCase() || '') &&
       part.model.toLowerCase().includes(selectedVehicle?.model?.toLowerCase() || '');
@@ -102,10 +117,11 @@ const Search: React.FC = () => {
             <p>Model: {selectedVehicle?.model}</p>
             <p>Year: {selectedVehicle?.year}</p>
             <p>Engine: {selectedVehicle?.engineType}</p>
-            <p>Engine Number: {selectedVehicle?.engineNumber}</p>
+            {selectedVehicle?.engineNumber && <p>Engine Number: {selectedVehicle.engineNumber}</p>}
             <p>Transmission: {selectedVehicle?.transmissionType}</p>
             <p>Trim: {selectedVehicle?.trimLevel}</p>
             {selectedVehicle?.vin && <p>VIN: {selectedVehicle.vin}</p>}
+            {selectedVehicle?.partNumber && <p>Part Number: {selectedVehicle.partNumber}</p>}
           </div>
           <button
             onClick={handleChangeVehicle}

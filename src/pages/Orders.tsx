@@ -1,39 +1,108 @@
-import React from 'react';
-import { Package, Truck, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Package, Truck, CheckCircle, ChevronDown, ChevronUp, Info } from 'lucide-react';
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+  partNumber: string;
+  model: string;
+  engineType?: string;
+  engineNumber?: string;
+  transmissionType?: string;
+  trimLevel?: string;
+  category: string;
+  supplier: string;
+  location: string;
+  deliveryTime: string;
+  isLocal: boolean;
+  description?: string;
+}
+
+interface Order {
+  id: string;
+  date: string;
+  status: 'Processing' | 'Shipped' | 'Delivered';
+  total: number;
+  items: OrderItem[];
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  shippingAddress: string;
+  paymentMethod: string;
+}
 
 const Orders: React.FC = () => {
-  const mockOrders = [
+  const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
+  const [expandedItems, setExpandedItems] = useState<{ [key: string]: string[] }>({});
+
+  const mockOrders: Order[] = [
     {
       id: '1',
       date: '2024-03-15',
       status: 'Processing',
       total: 85000,
+      shippingAddress: '123 Main St, Nairobi, Kenya',
+      paymentMethod: 'Credit Card',
       items: [
-        { name: 'Brake Pad Set', quantity: 2, price: 8500 },
-        { name: 'Oil Filter', quantity: 1, price: 1200 },
-      ],
+        {
+          name: 'Brake Pad Set',
+          quantity: 2,
+          price: 8500,
+          partNumber: 'BP-2024-001',
+          model: 'BMW 3 Series 2019',
+          engineType: '2.0L 4-cylinder (B48)',
+          engineNumber: 'B48B20B',
+          transmissionType: 'Automatic 8-Speed',
+          trimLevel: 'Sport Line',
+          category: 'Brakes',
+          supplier: 'German Auto Spares',
+          location: 'Nairobi, Kenya',
+          deliveryTime: '1-2 days',
+          isLocal: true,
+          description: 'High-performance brake pads for optimal braking'
+        },
+        {
+          name: 'Oil Filter',
+          quantity: 1,
+          price: 1200,
+          partNumber: 'OF-2024-002',
+          model: 'BMW 3 Series 2019',
+          category: 'Engine',
+          supplier: 'German Auto Spares',
+          location: 'Nairobi, Kenya',
+          deliveryTime: '1-2 days',
+          isLocal: true
+        }
+      ]
     },
     {
       id: '2',
       date: '2024-03-10',
       status: 'Shipped',
       total: 45000,
+      trackingNumber: 'TRK123456789',
+      estimatedDelivery: '2024-03-17',
+      shippingAddress: '456 Park Ave, Mombasa, Kenya',
+      paymentMethod: 'M-PESA',
       items: [
-        { name: 'Alternator', quantity: 1, price: 45000 },
-      ],
-    },
-    {
-      id: '3',
-      date: '2024-03-05',
-      status: 'Delivered',
-      total: 32000,
-      items: [
-        { name: 'Shock Absorber Set', quantity: 1, price: 32000 },
-      ],
-    },
+        {
+          name: 'Alternator',
+          quantity: 1,
+          price: 45000,
+          partNumber: 'ALT-2024-003',
+          model: 'BMW 3 Series 2019',
+          category: 'Electrical',
+          supplier: 'German Auto Spares',
+          location: 'Mombasa, Kenya',
+          deliveryTime: '2-3 days',
+          isLocal: true,
+          description: 'OEM replacement alternator'
+        }
+      ]
+    }
   ];
 
-  const getStatusIcon = (status: string) => {
+  const getStatusIcon = (status: Order['status']) => {
     switch (status) {
       case 'Processing':
         return <Package className="h-5 w-5 text-yellow-500" />;
@@ -41,9 +110,24 @@ const Orders: React.FC = () => {
         return <Truck className="h-5 w-5 text-blue-500" />;
       case 'Delivered':
         return <CheckCircle className="h-5 w-5 text-green-500" />;
-      default:
-        return null;
     }
+  };
+
+  const toggleOrderDetails = (orderId: string) => {
+    setExpandedOrders(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId)
+        : [...prev, orderId]
+    );
+  };
+
+  const toggleItemDetails = (orderId: string, itemId: string) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [orderId]: prev[orderId]?.includes(itemId)
+        ? prev[orderId].filter(id => id !== itemId)
+        : [...(prev[orderId] || []), itemId]
+    }));
   };
 
   return (
@@ -56,13 +140,23 @@ const Orders: React.FC = () => {
             key={order.id}
             className="bg-card rounded-lg shadow-md p-6 border border-border"
           >
-            <div className="flex justify-between items-start mb-4">
+            <div className="flex justify-between items-start">
               <div>
                 <div className="flex items-center space-x-2">
                   {getStatusIcon(order.status)}
                   <span className="font-semibold text-card-foreground">
                     Order #{order.id}
                   </span>
+                  <button
+                    onClick={() => toggleOrderDetails(order.id)}
+                    className="p-1 hover:bg-accent rounded-full"
+                  >
+                    {expandedOrders.includes(order.id) ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Placed on {new Date(order.date).toLocaleDateString()}
@@ -76,21 +170,95 @@ const Orders: React.FC = () => {
               </div>
             </div>
 
-            <div className="border-t border-border pt-4">
-              <h4 className="font-medium text-card-foreground mb-2">Order Items</h4>
-              <div className="space-y-2">
-                {order.items.map((item, index) => (
-                  <div key={index} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">
-                      {item.quantity}x {item.name}
-                    </span>
-                    <span className="text-card-foreground">
-                      KSh {(item.price * item.quantity).toLocaleString()}
-                    </span>
+            {expandedOrders.includes(order.id) && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <h4 className="font-medium text-card-foreground mb-2">Order Details</h4>
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      <p>Status: {order.status}</p>
+                      <p>Payment Method: {order.paymentMethod}</p>
+                      <p>Shipping Address: {order.shippingAddress}</p>
+                      {order.trackingNumber && (
+                        <p>Tracking Number: {order.trackingNumber}</p>
+                      )}
+                      {order.estimatedDelivery && (
+                        <p>Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}</p>
+                      )}
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                <h4 className="font-medium text-card-foreground mb-2">Order Items</h4>
+                <div className="space-y-4">
+                  {order.items.map((item, index) => (
+                    <div key={index} className="border border-border rounded-lg p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <h5 className="font-medium text-card-foreground">{item.name}</h5>
+                            <button
+                              onClick={() => toggleItemDetails(order.id, `${index}`)}
+                              className="ml-2 p-1 hover:bg-accent rounded-full"
+                            >
+                              {expandedItems[order.id]?.includes(`${index}`) ? (
+                                <ChevronUp className="h-4 w-4" />
+                              ) : (
+                                <ChevronDown className="h-4 w-4" />
+                              )}
+                            </button>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {item.quantity}x @ KSh {item.price.toLocaleString()} each
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-medium text-card-foreground">
+                            KSh {(item.quantity * item.price).toLocaleString()}
+                          </p>
+                        </div>
+                      </div>
+
+                      {expandedItems[order.id]?.includes(`${index}`) && (
+                        <div className="mt-4 pt-4 border-t border-border">
+                          <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div>
+                              <h6 className="font-medium text-card-foreground mb-2">Vehicle Details</h6>
+                              <div className="space-y-1 text-muted-foreground">
+                                <p>Make: {item.model.split(' ')[0]}</p>
+                                <p>Model: {item.model.split(' ').slice(1, -1).join(' ')}</p>
+                                <p>Year: {item.model.split(' ').pop()}</p>
+                                {item.engineType && <p>Engine: {item.engineType}</p>}
+                                {item.engineNumber && <p>Engine Number: {item.engineNumber}</p>}
+                                {item.transmissionType && <p>Transmission: {item.transmissionType}</p>}
+                                {item.trimLevel && <p>Trim Level: {item.trimLevel}</p>}
+                              </div>
+                            </div>
+                            <div>
+                              <h6 className="font-medium text-card-foreground mb-2">Part Details</h6>
+                              <div className="space-y-1 text-muted-foreground">
+                                <p>Part Number: {item.partNumber}</p>
+                                <p>Category: {item.category}</p>
+                                <p>Supplier: {item.supplier}</p>
+                                <p>Location: {item.location}</p>
+                                <p>Delivery Time: {item.deliveryTime}</p>
+                                <p>Type: {item.isLocal ? 'Local Stock' : 'Import'}</p>
+                              </div>
+                            </div>
+                            {item.description && (
+                              <div className="col-span-2">
+                                <h6 className="font-medium text-card-foreground mb-2">Description</h6>
+                                <p className="text-muted-foreground">{item.description}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         ))}
       </div>

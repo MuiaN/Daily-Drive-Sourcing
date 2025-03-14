@@ -33,12 +33,6 @@ const bmw3SeriesSedanUnits: PartUnit[] = [
     description: 'Suspension and steering components'
   },
   {
-    id: 'engine',
-    name: 'Engine',
-    image: 'https://images.unsplash.com/photo-1486754735734-325b5831c3ad?auto=format&fit=crop&w=800&q=80',
-    description: 'Engine components and parts'
-  },
-  {
     id: 'brakes',
     name: 'Brakes',
     image: 'https://images.unsplash.com/photo-1600191763437-4b7f2cae081c?auto=format&fit=crop&w=800&q=80',

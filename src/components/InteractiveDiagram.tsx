@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ZoomIn, ZoomOut, RotateCw, ChevronRight, ChevronLeft, ShoppingCart } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
@@ -33,6 +33,8 @@ const InteractiveDiagram: React.FC<Props> = ({
   const [hoveredPartId, setHoveredPartId] = useState<string | null>(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedPartForCart, setSelectedPartForCart] = useState<string | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const diagramRef = useRef<HTMLDivElement>(null);
   
   const { user } = useAuthStore();
   const { addItem } = useCartStore();
@@ -117,12 +119,18 @@ const InteractiveDiagram: React.FC<Props> = ({
       </div>
 
       <div className="flex">
-        <div className={`relative overflow-hidden border border-border rounded-lg ${showSidebar ? 'w-3/4' : 'w-full'}`} style={{ height: '500px' }}>
+        <div 
+          ref={containerRef}
+          className={`relative overflow-hidden border border-border rounded-lg ${showSidebar ? 'w-3/4' : 'w-full'}`} 
+          style={{ height: '500px' }}
+        >
           <div 
-            className="relative w-full h-full transition-transform duration-300 ease-in-out"
-            style={{ 
+            ref={diagramRef}
+            className="relative w-full h-full"
+            style={{
               transform: `scale(${zoom}) rotate(${rotation}deg)`,
-              transformOrigin: 'center center'
+              transformOrigin: 'center center',
+              transition: 'transform 300ms ease-in-out'
             }}
           >
             <img 
@@ -136,7 +144,7 @@ const InteractiveDiagram: React.FC<Props> = ({
                 key={part.id}
                 className={`absolute cursor-pointer transition-all duration-200 ${
                   selectedPartId === part.id || hoveredPartId === part.id
-                    ? 'bg-primary/30 border-2 border-primary' 
+                    ? 'bg-primary/30 border-2 border-primary'
                     : 'bg-transparent hover:bg-primary/20 border border-transparent hover:border-primary'
                 }`}
                 style={{
@@ -149,10 +157,12 @@ const InteractiveDiagram: React.FC<Props> = ({
                 onMouseEnter={() => setHoveredPartId(part.id)}
                 onMouseLeave={() => setHoveredPartId(null)}
               >
-                <div className={`absolute top-0 left-0 transform -translate-y-full bg-card p-1 rounded shadow-md text-xs ${
-                  selectedPartId === part.id || hoveredPartId === part.id ? 'opacity-100' : 'opacity-0'
-                } transition-opacity duration-200 pointer-events-none z-10`}>
-                  {part.id}
+                <div 
+                  className={`absolute top-0 left-0 transform -translate-y-full bg-card p-1 rounded shadow-md text-xs ${
+                    selectedPartId === part.id || hoveredPartId === part.id ? 'opacity-100' : 'opacity-0'
+                  } transition-opacity duration-200 pointer-events-none z-10`}
+                >
+                  {part.name}
                 </div>
               </div>
             ))}

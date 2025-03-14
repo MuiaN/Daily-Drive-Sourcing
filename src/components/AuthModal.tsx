@@ -9,13 +9,18 @@ interface Props {
   mode?: 'signin' | 'signup';
 }
 
-const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, mode = 'signin' }) => {
+const AuthModal: React.FC<Props> = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  mode = 'signin',
+}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentMode, setCurrentMode] = useState(mode);
-  
+
   const { signIn, signUp } = useAuthStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -61,7 +66,10 @@ const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, mode = 'signin
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-card-foreground">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-card-foreground"
+            >
               Email
             </label>
             <input
@@ -75,7 +83,10 @@ const AuthModal: React.FC<Props> = ({ isOpen, onClose, onSuccess, mode = 'signin
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-card-foreground">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-card-foreground"
+            >
               Password
             </label>
             <input

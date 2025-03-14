@@ -1,13 +1,22 @@
 import React from 'react';
-import { Minus, Plus, Trash2, ShoppingBag } from 'lucide-react';
+import { Minus, Plus, Trash2, ShoppingBag, ChevronDown, ChevronUp, Package, Info } from 'lucide-react';
 import { useCartStore } from '../store/cartStore';
 import { useNavigate } from 'react-router-dom';
 
 const Cart: React.FC = () => {
   const { items, updateQuantity, removeItem } = useCartStore();
   const navigate = useNavigate();
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  const toggleItemDetails = (itemId: string) => {
+    setExpandedItems(prev => 
+      prev.includes(itemId) 
+        ? prev.filter(id => id !== itemId)
+        : [...prev, itemId]
+    );
+  };
 
   if (items.length === 0) {
     return (
@@ -33,16 +42,32 @@ const Cart: React.FC = () => {
         {items.map((item) => (
           <div key={item.id} className="bg-card rounded-lg p-4 border border-border">
             <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-semibold text-card-foreground">{item.name}</h3>
-                <p className="text-sm text-muted-foreground">{item.model}</p>
-                <div className="flex items-center text-sm text-muted-foreground mt-1">
-                  <span className="mr-2">{item.supplier}</span>
-                  <span>•</span>
-                  <span className="ml-2">{item.location}</span>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-semibold text-card-foreground">{item.name}</h3>
+                  <button
+                    onClick={() => toggleItemDetails(item.id)}
+                    className="p-1 hover:bg-accent rounded-full"
+                  >
+                    {expandedItems.includes(item.id) ? (
+                      <ChevronUp className="h-5 w-5" />
+                    ) : (
+                      <ChevronDown className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  <div className="flex items-center">
+                    <Package className="h-4 w-4 mr-1" />
+                    Part #: {item.partNumber}
+                  </div>
+                  <div className="flex items-center mt-1">
+                    <Info className="h-4 w-4 mr-1" />
+                    For: {item.model}
+                  </div>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-right ml-4">
                 <p className="font-semibold text-card-foreground">
                   KSh {(item.price * item.quantity).toLocaleString()}
                 </p>
@@ -51,6 +76,42 @@ const Cart: React.FC = () => {
                 </p>
               </div>
             </div>
+
+            {expandedItems.includes(item.id) && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h4 className="font-medium text-card-foreground mb-2">Vehicle Details</h4>
+                    <div className="space-y-1 text-muted-foreground">
+                      <p>Make: {item.model.split(' ')[0]}</p>
+                      <p>Model: {item.model.split(' ').slice(1, -1).join(' ')}</p>
+                      <p>Year: {item.model.split(' ').pop()}</p>
+                      {item.engineType && <p>Engine: {item.engineType}</p>}
+                      {item.engineNumber && <p>Engine Number: {item.engineNumber}</p>}
+                      {item.transmissionType && <p>Transmission: {item.transmissionType}</p>}
+                      {item.trimLevel && <p>Trim Level: {item.trimLevel}</p>}
+                    </div>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-card-foreground mb-2">Part Details</h4>
+                    <div className="space-y-1 text-muted-foreground">
+                      <p>Category: {item.category}</p>
+                      <p>Supplier: {item.supplier}</p>
+                      <p>Location: {item.location}</p>
+                      <p>Delivery Time: {item.deliveryTime}</p>
+                      <p>Stock: {item.availability} units available</p>
+                      <p>Type: {item.isLocal ? 'Local Stock' : 'Import'}</p>
+                    </div>
+                  </div>
+                  {item.description && (
+                    <div className="col-span-2">
+                      <h4 className="font-medium text-card-foreground mb-2">Description</h4>
+                      <p className="text-muted-foreground">{item.description}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
             
             <div className="flex items-center justify-between mt-4">
               <div className="flex items-center space-x-2">

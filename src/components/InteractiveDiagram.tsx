@@ -1,8 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { ZoomIn, ZoomOut, RotateCw, ChevronRight, ChevronLeft, ShoppingCart } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
-import { useCartStore } from '../store/cartStore';
-import AuthModal from './AuthModal';
+import React, { useState, useRef } from 'react';
+import { ZoomIn, ZoomOut, RotateCw, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import PartVariationsModal from './PartVariationsModal';
 
 interface DiagramPart {
   id: string;
@@ -10,8 +8,6 @@ interface DiagramPart {
   coordinates: { x: number; y: number; width: number; height: number };
   partNumber: string;
   description?: string;
-  price?: number;
-  availability?: number;
 }
 
 interface Props {
@@ -31,13 +27,12 @@ const InteractiveDiagram: React.FC<Props> = ({
   const [rotation, setRotation] = useState(0);
   const [showSidebar, setShowSidebar] = useState(true);
   const [hoveredPartId, setHoveredPartId] = useState<string | null>(null);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const [selectedPartForCart, setSelectedPartForCart] = useState<string | null>(null);
+  const [showVariationsModal, setShowVariationsModal] = useState(false);
+  const [expandedParts, setExpandedParts] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const diagramRef = useRef<HTMLDivElement>(null);
-  
-  const { user } = useAuthStore();
-  const { addItem } = useCartStore();
+
+  const selectedPart = selectedPartId ? parts.find(p => p.id === selectedPartId) : null;
 
   const handleZoomIn = () => {
     setZoom(prev => Math.min(prev + 0.2, 2.5));
@@ -55,42 +50,114 @@ const InteractiveDiagram: React.FC<Props> = ({
     setShowSidebar(prev => !prev);
   };
 
-  const handleAddToCart = (part: DiagramPart) => {
-    if (!user) {
-      setSelectedPartForCart(part.id);
-      setShowAuthModal(true);
-      return;
-    }
-    
-    addItem({
-      id: part.id,
-      name: part.name,
-      partNumber: part.partNumber,
-      price: part.price || 0,
-      availability: part.availability || 0,
-      category: 'Suspension',
-      model: 'BMW 3 Series 2019',
-      supplier: 'German Auto Spares',
-      location: 'Nairobi, Kenya',
-      deliveryTime: '1-2 days',
-      isLocal: true,
-      description: part.description
-    });
+  const handlePartClick = (partId: string) => {
+    onPartSelect(partId);
+    setShowVariationsModal(true);
   };
 
-  const handleAuthSuccess = () => {
-    setShowAuthModal(false);
-    if (selectedPartForCart) {
-      const part = parts.find(p => p.id === selectedPartForCart);
-      if (part) {
-        handleAddToCart(part);
-      }
-      setSelectedPartForCart(null);
-    }
+  const togglePartExpansion = (partId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setExpandedParts(prev => 
+      prev.includes(partId) 
+        ? prev.filter(id => id !== partId)
+        : [...prev, partId]
+    );
   };
+
+  // Mock variations data
+  const mockVariations = [
+    {
+      id: '1',
+      type: 'OEM' as const,
+      manufacturer: 'BMW',
+      partNumber: 'BMW-31216765423',
+      price: 78500,
+      supplier: {
+        name: 'German Auto Spares Ltd.',
+        rating: 4.8,
+        location: 'Nairobi, Kenya',
+        deliveryTime: '1-2 days',
+        companyInfo: {
+          established: '1995',
+          specialization: 'BMW, Mercedes-Benz, Audi parts',
+          contact: {
+            phone: '+254 712 345 678',
+            email: 'sales@germanauto.co.ke',
+            website: 'https://germanauto.co.ke'
+          },
+          certifications: ['BMW Certified Partner', 'ISO 9001:2015'],
+          verificationStatus: 'Premium Partner',
+          totalOrders: 15000,
+          satisfactionRate: 98
+        }
+      },
+      warranty: '2 years',
+      availability: 4,
+      qualityScore: 10,
+      certification: ['BMW Certified', 'Genuine Part']
+    },
+    {
+      id: '2',
+      type: 'Generic' as const,
+      manufacturer: 'Bosch',
+      partNumber: 'BSH-31216765423',
+      price: 45000,
+      supplier: {
+        name: 'Euro Car Parts Kenya',
+        rating: 4.5,
+        location: 'Mombasa, Kenya',
+        deliveryTime: '2-3 days',
+        companyInfo: {
+          established: '2005',
+          specialization: 'European vehicle parts',
+          contact: {
+            phone: '+254 722 987 654',
+            email: 'info@europarts.co.ke',
+            website: 'https://europarts.co.ke'
+          },
+          certifications: ['ISO 9001:2015', 'TÜV Certified'],
+          verificationStatus: 'Verified',
+          totalOrders: 8500,
+          satisfactionRate: 95
+        }
+      },
+      warranty: '1 year',
+      availability: 8,
+      qualityScore: 8.5,
+      certification: ['ISO 9001', 'TÜV Certified']
+    },
+    {
+      id: '3',
+      type: 'Second Hand' as const,
+      manufacturer: 'BMW',
+      partNumber: 'BMW-31216765423-SH',
+      price: 25000,
+      supplier: {
+        name: 'Quality Used Auto Parts',
+        rating: 4.2,
+        location: 'Nairobi, Kenya',
+        deliveryTime: '1-2 days',
+        companyInfo: {
+          established: '2010',
+          specialization: 'Used European car parts',
+          contact: {
+            phone: '+254 733 123 456',
+            email: 'info@qualityused.co.ke'
+          },
+          certifications: ['KRA Registered', 'KEBS Certified'],
+          verificationStatus: 'Verified',
+          totalOrders: 5000,
+          satisfactionRate: 92
+        }
+      },
+      condition: 'Good - 70,000 km',
+      availability: 1,
+      qualityScore: 7.5
+    }
+  ];
 
   return (
-    <div className="bg-card rounded-lg shadow-md p-4 border border-border">
+    <div className="w-full">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-card-foreground">Interactive Diagram</h3>
         <div className="flex space-x-2">
@@ -118,11 +185,11 @@ const InteractiveDiagram: React.FC<Props> = ({
         </div>
       </div>
 
-      <div className="flex">
+      <div className="flex bg-card rounded-lg shadow-md p-4 border border-border">
         <div 
           ref={containerRef}
-          className={`relative overflow-hidden border border-border rounded-lg ${showSidebar ? 'w-3/4' : 'w-full'}`} 
-          style={{ height: '500px' }}
+          className={`relative overflow-hidden border border-border rounded-lg ${showSidebar ? 'w-[65%]' : 'w-full'}`} 
+          style={{ height: '700px' }}
         >
           <div 
             ref={diagramRef}
@@ -153,7 +220,7 @@ const InteractiveDiagram: React.FC<Props> = ({
                   width: `${part.coordinates.width}%`,
                   height: `${part.coordinates.height}%`,
                 }}
-                onClick={() => onPartSelect(part.id)}
+                onClick={() => handlePartClick(part.id)}
                 onMouseEnter={() => setHoveredPartId(part.id)}
                 onMouseLeave={() => setHoveredPartId(null)}
               >
@@ -177,55 +244,61 @@ const InteractiveDiagram: React.FC<Props> = ({
         </div>
         
         {showSidebar && (
-          <div className="w-1/4 ml-4 border border-border rounded-lg overflow-y-auto" style={{ height: '500px' }}>
+          <div className="w-[35%] ml-4 border border-border rounded-lg overflow-hidden" style={{ height: '700px' }}>
             <div className="p-3 bg-muted">
               <h4 className="font-medium text-sm">Parts List</h4>
             </div>
-            <div className="divide-y divide-border">
+            <div className="divide-y divide-border overflow-y-auto" style={{ height: 'calc(100% - 41px)' }}>
               {parts.map(part => (
                 <div 
                   key={part.id}
-                  className={`p-3 cursor-pointer transition-colors ${
+                  className={`transition-colors ${
                     selectedPartId === part.id ? 'bg-primary/10' : 'hover:bg-muted/50'
                   }`}
-                  onClick={() => onPartSelect(part.id)}
-                  onMouseEnter={() => setHoveredPartId(part.id)}
-                  onMouseLeave={() => setHoveredPartId(null)}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium text-sm">{part.name}</div>
-                    <div className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
-                      {part.id}
-                    </div>
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1">
-                    Part #: {part.partNumber}
-                  </div>
-                  {part.description && (
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {part.description}
-                    </div>
-                  )}
-                  {part.price && (
-                    <div className="flex justify-between items-center mt-2">
-                      <div className="text-sm font-semibold text-primary">
-                        KSh {part.price.toLocaleString()}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {part.availability} in stock
-                      </div>
-                    </div>
-                  )}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(part);
-                    }}
-                    className="mt-2 w-full flex items-center justify-center px-3 py-1.5 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors text-sm"
+                  <div 
+                    className="p-3 cursor-pointer flex items-start justify-between"
+                    onClick={() => handlePartClick(part.id)}
+                    onMouseEnter={() => setHoveredPartId(part.id)}
+                    onMouseLeave={() => setHoveredPartId(null)}
                   >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Add to Cart
-                  </button>
+                    <div className="flex-1 min-w-0 pr-2">
+                      <div className="font-medium text-sm truncate">{part.name}</div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        #{part.partNumber}
+                      </div>
+                    </div>
+                    <button
+                      onClick={(e) => togglePartExpansion(part.id, e)}
+                      className="ml-2 p-1 hover:bg-muted rounded-full flex-shrink-0"
+                    >
+                      {expandedParts.includes(part.id) ? (
+                        <ChevronUp className="h-4 w-4" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4" />
+                      )}
+                    </button>
+                  </div>
+                  
+                  {expandedParts.includes(part.id) && (
+                    <div className="px-3 pb-3">
+                      <div className="bg-muted/50 rounded p-2 text-xs space-y-1.5">
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">ID:</span>
+                          <span className="font-medium text-foreground">{part.id}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-muted-foreground">Part Number:</span>
+                          <span className="font-medium text-foreground">{part.partNumber}</span>
+                        </div>
+                        {part.description && (
+                          <div className="pt-1.5 mt-1.5 border-t border-border/50">
+                            <span className="text-muted-foreground">{part.description}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -237,15 +310,14 @@ const InteractiveDiagram: React.FC<Props> = ({
         Click on a highlighted area to select a specific part.
       </div>
 
-      <AuthModal
-        isOpen={showAuthModal}
-        onClose={() => {
-          setShowAuthModal(false);
-          setSelectedPartForCart(null);
-        }}
-        onSuccess={handleAuthSuccess}
-        mode="signin"
-      />
+      {selectedPart && (
+        <PartVariationsModal
+          isOpen={showVariationsModal}
+          onClose={() => setShowVariationsModal(false)}
+          partName={selectedPart.name}
+          variations={mockVariations}
+        />
+      )}
     </div>
   );
 };

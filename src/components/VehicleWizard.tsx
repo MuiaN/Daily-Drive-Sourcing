@@ -161,10 +161,11 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
   const isGermanBrand = (make: string) => germanBrands.includes(make);
 
   return (
-    <div className="max-w-2xl mx-auto bg-card p-6 rounded-lg shadow-lg border border-border">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-foreground">Find Your Vehicle</h2>
       <div className="space-y-6">
         <div>
-          <h3 className="text-lg font-semibold mb-4 text-card-foreground flex items-center justify-between">
+          <h3 className="text-lg font-semibold mb-4 text-foreground flex items-center justify-between">
             <span>Search by {isGermanBrand(selection.make || '') ? 'VIN' : 'Chassis'} Number, Part Number, or Engine Number</span>
             {initialSelection && (
               <button
@@ -228,8 +229,8 @@ const VehicleWizard: React.FC<Props> = ({ onComplete, initialSelection }) => {
         </div>
 
         {showManualSearch && (
-          <div className="space-y-4 border-t border-border pt-4">
-            <h4 className="font-medium text-card-foreground">Manual Search</h4>
+          <div className="space-y-4">
+            <h4 className="font-medium text-foreground">Manual Search</h4>
             
             <div>
               <label className="block text-sm font-medium text-muted-foreground mb-1">

@@ -47,7 +47,7 @@ const bmwSuspensionDiagram = {
     {
       id: '3K185',
       name: 'Steering Knuckle Assembly',
-      coordinates: { x: 28.5, y: 20.5, width: 4, height: 3 },
+      coordinates: { x: 3, y: 23, width: 8, height: 3 },
       partNumber: 'BMW-31216765423',
       description: 'Front left steering knuckle assembly',
       price: 78500,
@@ -56,7 +56,7 @@ const bmwSuspensionDiagram = {
     {
       id: 'HB1',
       name: 'Hub Bolt',
-      coordinates: { x: 29, y: 29, width: 3, height: 3 },
+      coordinates: { x: 4, y: 30.5, width: 6, height: 3 },
       partNumber: 'BMW-31106779420',
       description: 'Wheel hub mounting bolt',
       price: 2500,
@@ -65,7 +65,7 @@ const bmwSuspensionDiagram = {
     {
       id: '3123',
       name: 'Wheel Hub Assembly',
-      coordinates: { x: 55.5, y: 37, width: 3, height: 3 },
+      coordinates: { x: 62.5, y: 38, width: 6, height: 3 },
       partNumber: 'BMW-31226765601',
       description: 'Front wheel hub and bearing assembly',
       price: 42000,
@@ -74,7 +74,7 @@ const bmwSuspensionDiagram = {
     {
       id: 'HN1',
       name: 'Hub Nut',
-      coordinates: { x: 61.5, y: 70.5, width: 3, height: 3 },
+      coordinates: { x: 76, y: 68.5, width: 5.5, height: 3 },
       partNumber: 'BMW-31226776162',
       description: 'Wheel hub axle nut',
       price: 1800,

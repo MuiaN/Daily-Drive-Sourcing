@@ -141,24 +141,18 @@ const PartSelector: React.FC = () => {
       
       case SelectionStep.CarTypeSelection:
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-card-foreground">Select Car Type</h2>
-            <CarTypeSelector 
-              carTypes={getCarTypes()} 
-              onTypeSelect={handleCarTypeSelection} 
-            />
-          </div>
+          <CarTypeSelector 
+            carTypes={getCarTypes()} 
+            onTypeSelect={handleCarTypeSelection} 
+          />
         );
       
       case SelectionStep.PartUnitSelection:
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-card-foreground">Select Part Unit</h2>
-            <PartUnitSelector 
-              units={getPartUnits()} 
-              onUnitSelect={handlePartUnitSelection} 
-            />
-          </div>
+          <PartUnitSelector 
+            units={getPartUnits()} 
+            onUnitSelect={handlePartUnitSelection} 
+          />
         );
       
       case SelectionStep.DiagramSelection:
@@ -168,20 +162,18 @@ const PartSelector: React.FC = () => {
         }
         
         return (
-          <div className="space-y-6">
-            <InteractiveDiagram 
-              diagramImage={diagramData.image}
-              parts={diagramData.parts}
-              onPartSelect={handlePartSelection}
-              selectedPartId={selectedPartId || undefined}
-            />
-          </div>
+          <InteractiveDiagram 
+            diagramImage={diagramData.image}
+            parts={diagramData.parts}
+            onPartSelect={handlePartSelection}
+            selectedPartId={selectedPartId || undefined}
+          />
         );
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8">
       {currentStep > SelectionStep.VehicleSelection && (
         <SelectionBreadcrumb 
           items={breadcrumbItems} 

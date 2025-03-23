@@ -40,3 +40,6 @@ Spark Plug Set
 Air Conditioning Filter
 
 
+
+setup the part list to not have the add to cart and when selected, it gives a popup to show the different variations of what is available from manufacturer of the part to the part type w.g OEM or generic, and also show the different prices for al of the products listed for the selected part. Also on this window, show who is supplying the part 
+

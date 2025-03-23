@@ -12,6 +12,10 @@ import HowItWorks from './pages/HowItWorks';
 import Suppliers from './pages/Suppliers';
 import Dealerships from './pages/Dealerships';
 import FAQ from './pages/FAQ';
+import ShippingPolicy from './pages/ShippingPolicy';
+import ReturnsWarranty from './pages/ReturnsWarranty';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 import { useAuthStore } from './store/authStore';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -41,6 +45,10 @@ function App() {
           <Route path="suppliers" element={<Suppliers />} />
           <Route path="dealerships" element={<Dealerships />} />
           <Route path="faq" element={<FAQ />} />
+          <Route path="shipping" element={<ShippingPolicy />} />
+          <Route path="returns" element={<ReturnsWarranty />} />
+          <Route path="privacy" element={<PrivacyPolicy />} />
+          <Route path="terms" element={<TermsOfService />} />
           <Route
             path="orders"
             element={

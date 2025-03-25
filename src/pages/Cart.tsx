@@ -147,7 +147,10 @@ const Cart: React.FC = () => {
             KSh {total.toLocaleString()}
           </span>
         </div>
-        <button className="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors">
+        <button
+          className="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors"
+          onClick={() => navigate('/Checkout')}
+          >
           Proceed to Checkout
         </button>
       </div>

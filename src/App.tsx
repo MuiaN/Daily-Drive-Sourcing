@@ -16,6 +16,7 @@ import ShippingPolicy from './pages/ShippingPolicy';
 import ReturnsWarranty from './pages/ReturnsWarranty';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
+import Sitemap from './pages/Sitemap';
 import { useAuthStore } from './store/authStore';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -49,6 +50,7 @@ function App() {
           <Route path="returns" element={<ReturnsWarranty />} />
           <Route path="privacy" element={<PrivacyPolicy />} />
           <Route path="terms" element={<TermsOfService />} />
+          <Route path="sitemap" element={<Sitemap />} />
           <Route
             path="orders"
             element={

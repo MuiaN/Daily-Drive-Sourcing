@@ -140,14 +140,22 @@ const PartVariationsModal: React.FC<Props> = ({
     <>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-card rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          <div className="p-6 border-b border-border flex justify-between items-center sticky top-0 bg-card z-10">
-            <h2 className="text-2xl font-bold text-card-foreground">{partName} Options</h2>
-            <button
-              onClick={onClose}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-6 w-6" />
-            </button>
+          <div className="p-6 border-b border-border flex flex-col sticky top-0 bg-card z-10">
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-card-foreground">{partName}</h2>
+              <button
+                onClick={onClose}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Available from {variations.length} supplier{variations.length !== 1 ? 's' : ''}: {variations.map(v => v.supplier.name).join(', ')}
+              </span>
+            </div>
           </div>
 
           <div className="overflow-y-auto max-h-[calc(90vh-5rem)]">
@@ -299,3 +307,5 @@ const PartVariationsModal: React.FC<Props> = ({
 };
 
 export default PartVariationsModal;
+
+export default PartVariationsModal

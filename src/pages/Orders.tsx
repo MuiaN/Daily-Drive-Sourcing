@@ -138,124 +138,161 @@ const Orders: React.FC = () => {
         {mockOrders.map((order) => (
           <div
             key={order.id}
-            className="bg-card rounded-lg shadow-md p-6 border border-border"
+            className="bg-card rounded-lg shadow-md border border-border"
           >
-            <div className="flex justify-between items-start">
-              <div>
-                <div className="flex items-center space-x-2">
-                  {getStatusIcon(order.status)}
-                  <span className="font-semibold text-card-foreground">
-                    Order #{order.id}
-                  </span>
+            <div className="p-6">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    {getStatusIcon(order.status)}
+                    <span className="font-semibold text-card-foreground">
+                      Order #{order.id}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Placed on {new Date(order.date).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Payment: {order.paymentMethod}
+                  </p>
+                  {order.trackingNumber && (
+                    <p className="text-sm text-muted-foreground">
+                      Tracking: {order.trackingNumber}
+                    </p>
+                  )}
+                  {order.estimatedDelivery && (
+                    <p className="text-sm text-muted-foreground">
+                      Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}
+                    </p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <div className="font-semibold text-card-foreground">
+                    KSh {order.total.toLocaleString()}
+                  </div>
+                  <span className="text-sm text-muted-foreground">{order.status}</span>
+                </div>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+                    <Info className="h-4 w-4" />
+                    <span>{order.items.length} item{order.items.length !== 1 ? 's' : ''}</span>
+                  </div>
                   <button
                     onClick={() => toggleOrderDetails(order.id)}
-                    className="p-1 hover:bg-accent rounded-full"
+                    className="flex items-center space-x-1 text-primary hover:text-primary/80"
                   >
+                    <span className="text-sm">
+                      {expandedOrders.includes(order.id) ? 'Hide Details' : 'Show Details'}
+                    </span>
                     {expandedOrders.includes(order.id) ? (
-                      <ChevronUp className="h-5 w-5" />
+                      <ChevronUp className="h-4 w-4" />
                     ) : (
-                      <ChevronDown className="h-5 w-5" />
+                      <ChevronDown className="h-4 w-4" />
                     )}
                   </button>
                 </div>
-                <p className="text-sm text-muted-foreground">
-                  Placed on {new Date(order.date).toLocaleDateString()}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="font-semibold text-card-foreground">
-                  KSh {order.total.toLocaleString()}
-                </div>
-                <span className="text-sm text-muted-foreground">{order.status}</span>
               </div>
             </div>
 
             {expandedOrders.includes(order.id) && (
-              <div className="mt-4 pt-4 border-t border-border">
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <h4 className="font-medium text-card-foreground mb-2">Order Details</h4>
-                    <div className="space-y-1 text-sm text-muted-foreground">
-                      <p>Status: {order.status}</p>
-                      <p>Payment Method: {order.paymentMethod}</p>
-                      <p>Shipping Address: {order.shippingAddress}</p>
-                      {order.trackingNumber && (
-                        <p>Tracking Number: {order.trackingNumber}</p>
-                      )}
-                      {order.estimatedDelivery && (
-                        <p>Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}</p>
-                      )}
+              <div className="border-t border-border">
+                <div className="p-6 space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-medium text-card-foreground mb-2">Shipping Address</h4>
+                      <p className="text-sm text-muted-foreground">{order.shippingAddress}</p>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-card-foreground mb-2">Order Status</h4>
+                      <div className="space-y-1">
+                        <p className="text-sm text-muted-foreground">Status: {order.status}</p>
+                        {order.trackingNumber && (
+                          <p className="text-sm text-muted-foreground">
+                            Tracking Number: {order.trackingNumber}
+                          </p>
+                        )}
+                        {order.estimatedDelivery && (
+                          <p className="text-sm text-muted-foreground">
+                            Estimated Delivery: {new Date(order.estimatedDelivery).toLocaleDateString()}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <h4 className="font-medium text-card-foreground mb-2">Order Items</h4>
-                <div className="space-y-4">
-                  {order.items.map((item, index) => (
-                    <div key={index} className="border border-border rounded-lg p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center">
-                            <h5 className="font-medium text-card-foreground">{item.name}</h5>
-                            <button
-                              onClick={() => toggleItemDetails(order.id, `${index}`)}
-                              className="ml-2 p-1 hover:bg-accent rounded-full"
-                            >
-                              {expandedItems[order.id]?.includes(`${index}`) ? (
-                                <ChevronUp className="h-4 w-4" />
-                              ) : (
-                                <ChevronDown className="h-4 w-4" />
-                              )}
-                            </button>
+                  <div>
+                    <h4 className="font-medium text-card-foreground mb-4">Order Items</h4>
+                    <div className="space-y-4">
+                      {order.items.map((item, index) => (
+                        <div key={index} className="bg-background rounded-lg p-4 border border-border">
+                          <div className="flex items-center justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center">
+                                <h5 className="font-medium text-card-foreground">{item.name}</h5>
+                                <button
+                                  onClick={() => toggleItemDetails(order.id, `${index}`)}
+                                  className="ml-2 p-1 hover:bg-accent rounded-full"
+                                >
+                                  {expandedItems[order.id]?.includes(`${index}`) ? (
+                                    <ChevronUp className="h-4 w-4" />
+                                  ) : (
+                                    <ChevronDown className="h-4 w-4" />
+                                  )}
+                                </button>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                {item.quantity}x @ KSh {item.price.toLocaleString()} each
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium text-card-foreground">
+                                KSh {(item.quantity * item.price).toLocaleString()}
+                              </p>
+                            </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            {item.quantity}x @ KSh {item.price.toLocaleString()} each
-                          </p>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-medium text-card-foreground">
-                            KSh {(item.quantity * item.price).toLocaleString()}
-                          </p>
-                        </div>
-                      </div>
 
-                      {expandedItems[order.id]?.includes(`${index}`) && (
-                        <div className="mt-4 pt-4 border-t border-border">
-                          <div className="grid grid-cols-2 gap-4 text-sm">
-                            <div>
-                              <h6 className="font-medium text-card-foreground mb-2">Vehicle Details</h6>
-                              <div className="space-y-1 text-muted-foreground">
-                                <p>Make: {item.model.split(' ')[0]}</p>
-                                <p>Model: {item.model.split(' ').slice(1, -1).join(' ')}</p>
-                                <p>Year: {item.model.split(' ').pop()}</p>
-                                {item.engineType && <p>Engine: {item.engineType}</p>}
-                                {item.engineNumber && <p>Engine Number: {item.engineNumber}</p>}
-                                {item.transmissionType && <p>Transmission: {item.transmissionType}</p>}
-                                {item.trimLevel && <p>Trim Level: {item.trimLevel}</p>}
+                          {expandedItems[order.id]?.includes(`${index}`) && (
+                            <div className="mt-4 pt-4 border-t border-border">
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div>
+                                  <h6 className="font-medium text-card-foreground mb-2">Vehicle Details</h6>
+                                  <div className="space-y-1 text-muted-foreground">
+                                    <p>Make: {item.model.split(' ')[0]}</p>
+                                    <p>Model: {item.model.split(' ').slice(1, -1).join(' ')}</p>
+                                    <p>Year: {item.model.split(' ').pop()}</p>
+                                    {item.engineType && <p>Engine: {item.engineType}</p>}
+                                    {item.engineNumber && <p>Engine Number: {item.engineNumber}</p>}
+                                    {item.transmissionType && <p>Transmission: {item.transmissionType}</p>}
+                                    {item.trimLevel && <p>Trim Level: {item.trimLevel}</p>}
+                                  </div>
+                                </div>
+                                <div>
+                                  <h6 className="font-medium text-card-foreground mb-2">Part Details</h6>
+                                  <div className="space-y-1 text-muted-foreground">
+                                    <p>Part Number: {item.partNumber}</p>
+                                    <p>Category: {item.category}</p>
+                                    <p>Supplier: {item.supplier}</p>
+                                    <p>Location: {item.location}</p>
+                                    <p>Delivery Time: {item.deliveryTime}</p>
+                                    <p>Type: {item.isLocal ? 'Local Stock' : 'Import'}</p>
+                                  </div>
+                                </div>
+                                {item.description && (
+                                  <div className="col-span-2">
+                                    <h6 className="font-medium text-card-foreground mb-2">Description</h6>
+                                    <p className="text-muted-foreground">{item.description}</p>
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            <div>
-                              <h6 className="font-medium text-card-foreground mb-2">Part Details</h6>
-                              <div className="space-y-1 text-muted-foreground">
-                                <p>Part Number: {item.partNumber}</p>
-                                <p>Category: {item.category}</p>
-                                <p>Supplier: {item.supplier}</p>
-                                <p>Location: {item.location}</p>
-                                <p>Delivery Time: {item.deliveryTime}</p>
-                                <p>Type: {item.isLocal ? 'Local Stock' : 'Import'}</p>
-                              </div>
-                            </div>
-                            {item.description && (
-                              <div className="col-span-2">
-                                <h6 className="font-medium text-card-foreground mb-2">Description</h6>
-                                <p className="text-muted-foreground">{item.description}</p>
-                              </div>
-                            )}
-                          </div>
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  </div>
                 </div>
               </div>
             )}

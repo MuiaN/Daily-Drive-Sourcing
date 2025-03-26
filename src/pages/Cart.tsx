@@ -10,6 +10,10 @@ const Cart: React.FC = () => {
 
   const total = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
+  const handleContinueToCheckout = () => {
+    navigate('/Checkout');
+  };
+
   const toggleItemDetails = (itemId: string) => {
     setExpandedItems(prev => 
       prev.includes(itemId) 
@@ -148,8 +152,8 @@ const Cart: React.FC = () => {
           </span>
         </div>
         <button
+          onClick={handleContinueToCheckout}
           className="w-full bg-primary text-primary-foreground py-3 rounded-lg hover:bg-primary/90 transition-colors"
-          onClick={() => navigate('/Checkout')}
           >
           Proceed to Checkout
         </button>

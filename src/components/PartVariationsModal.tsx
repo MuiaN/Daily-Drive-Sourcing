@@ -140,21 +140,23 @@ const PartVariationsModal: React.FC<Props> = ({
     <>
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <div className="bg-card rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-          <div className="p-6 border-b border-border flex flex-col sticky top-0 bg-card z-10">
+          <div className="p-6 border-b border-border sticky top-0 bg-card z-10">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-card-foreground">{partName}</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-card-foreground">{partName}</h2>
+                <div className="flex items-center gap-2 mt-2">
+                  <Building2 className="h-4 w-4 text-primary" />
+                  <span className="text-sm text-primary font-medium">
+                    Available from {variations.length} supplier{variations.length !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
               <button
                 onClick={onClose}
                 className="text-muted-foreground hover:text-foreground"
               >
                 <X className="h-6 w-6" />
               </button>
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Available from {variations.length} supplier{variations.length !== 1 ? 's' : ''}: {variations.map(v => v.supplier.name).join(', ')}
-              </span>
             </div>
           </div>
 
@@ -254,31 +256,44 @@ const PartVariationsModal: React.FC<Props> = ({
                             )}
                           </div>
 
-                          <div className="space-y-3">
-                            <div>
-                              <div className="text-sm font-medium text-card-foreground">Supplier Details</div>
-                              <div className="space-y-1 text-sm text-muted-foreground">
+                          <div className="space-y-4">
+                            <div className="bg-muted/50 rounded-lg p-4">
+                              <div className="flex items-center justify-between mb-3">
+                                <span className="text-lg font-semibold text-primary">
+                                  {variation.supplier.name}
+                                </span>
+                                {getVerificationBadge(variation.supplier.companyInfo.verificationStatus)}
+                              </div>
+                              
+                              <div className="space-y-2 text-sm">
+                                <div className="text-primary">
+                                  <Phone className="h-4 w-4 inline mr-2" />
+                                  {variation.supplier.companyInfo.contact.phone}
+                                </div>
+                                <div className="text-primary">
+                                  <Mail className="h-4 w-4 inline mr-2" />
+                                  {variation.supplier.companyInfo.contact.email}
+                                </div>
+                                {variation.supplier.companyInfo.contact.website && (
+                                  <div className="text-primary">
+                                    <Globe className="h-4 w-4 inline mr-2" />
+                                    <a
+                                      href={variation.supplier.companyInfo.contact.website}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="hover:underline"
+                                    >
+                                      Visit Website
+                                    </a>
+                                  </div>
+                                )}
+                              </div>
+
+                              <div className="mt-3 pt-3 border-t border-border/50 space-y-1 text-sm text-muted-foreground">
                                 <p>Established: {variation.supplier.companyInfo.established}</p>
                                 <p>Total Orders: {variation.supplier.companyInfo.totalOrders.toLocaleString()}+</p>
                                 <p>Satisfaction Rate: {variation.supplier.companyInfo.satisfactionRate}%</p>
                                 <p>Specialization: {variation.supplier.companyInfo.specialization}</p>
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-card-foreground">Contact</div>
-                              <div className="space-y-1 text-sm text-muted-foreground">
-                                <p>{variation.supplier.companyInfo.contact.phone}</p>
-                                <p>{variation.supplier.companyInfo.contact.email}</p>
-                                {variation.supplier.companyInfo.contact.website && (
-                                  <a
-                                    href={variation.supplier.companyInfo.contact.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary hover:underline"
-                                  >
-                                    Visit Website
-                                  </a>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -307,5 +322,3 @@ const PartVariationsModal: React.FC<Props> = ({
 };
 
 export default PartVariationsModal;
-
-export default PartVariationsModal

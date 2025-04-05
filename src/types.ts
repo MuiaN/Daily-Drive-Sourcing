@@ -17,7 +17,6 @@ export interface Part {
   trimLevel?: string;
   image?: string;
   vin?: string;
-  description?: string;
 }
 
 export interface User {

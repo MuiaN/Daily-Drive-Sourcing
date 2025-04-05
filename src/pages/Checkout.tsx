@@ -1,19 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/cartStore';
+import { useCheckoutStore, DeliveryDetails } from '../store/checkoutStore';
 import { MapPin, Phone, Mail, Building2, Truck, Clock, ExternalLink } from 'lucide-react';
-import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, InfoWindow } from '@react-google-maps/api';
 import { supplierLocations } from '../data/mockData';
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
   const { items } = useCartStore();
+  const { setItems, setSubtotal, setDeliveryDetails } = useCheckoutStore();
+  
   const [shippingMethod, setShippingMethod] = useState<'standard' | 'express' | 'pickup'>('standard');
   const [selectedSupplier, setSelectedSupplier] = useState<string | null>(null);
+  const [selectedMarker, setSelectedMarker] = useState<string | null>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  
+  // Form state
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [street, setStreet] = useState('');
+  const [city, setCity] = useState('');
+  const [county, setCounty] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [businessName, setBusinessName] = useState('');
+  const [kraPin, setKraPin] = useState('');
 
   const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingCost = shippingMethod === 'standard' ? 500 : shippingMethod === 'express' ? 1000 : 0;
   const total = subtotal + shippingCost;
+
+  useEffect(() => {
+    // Update checkout store with current cart items and subtotal
+    setItems(items);
+    setSubtotal(subtotal);
+  }, [items, subtotal, setItems, setSubtotal]);
 
   // Get unique suppliers from cart items
   const cartSuppliers = [...new Set(items.map(item => item.supplier))];
@@ -29,8 +51,126 @@ const Checkout: React.FC = () => {
     height: '300px'
   };
 
+  const handleMarkerClick = (supplierName: string) => {
+    setSelectedMarker(supplierName);
+  };
+
+  const handleInfoWindowClose = () => {
+    setSelectedMarker(null);
+  };
+
+  const handleMapLoad = () => {
+    setIsMapLoaded(true);
+  };
+
   const handleContinueToPayment = () => {
+    // Validate required fields based on shipping method
+    if (shippingMethod !== 'pickup' && (!firstName || !lastName || !street || !city || !county)) {
+      alert('Please fill in all required shipping address fields');
+      return;
+    }
+
+    if (!phone || !email) {
+      alert('Please fill in all contact information');
+      return;
+    }
+
+    if (shippingMethod === 'pickup' && !selectedSupplier) {
+      alert('Please select a pickup location');
+      return;
+    }
+
+    // Create delivery details object
+    const deliveryDetails: DeliveryDetails = {
+      method: shippingMethod,
+      contact: {
+        phone,
+        email,
+      },
+      cost: shippingCost,
+    };
+
+    // Add address for delivery methods
+    if (shippingMethod !== 'pickup') {
+      deliveryDetails.address = {
+        firstName,
+        lastName,
+        street,
+        city,
+        county,
+      };
+    }
+
+    // Add business information if provided
+    if (businessName || kraPin) {
+      deliveryDetails.business = {
+        name: businessName,
+        kraPin,
+      };
+    }
+
+    // Add pickup location if selected
+    if (shippingMethod === 'pickup' && selectedSupplier && availableSuppliers[selectedSupplier]) {
+      deliveryDetails.pickupLocation = {
+        supplier: selectedSupplier,
+        address: availableSuppliers[selectedSupplier].address,
+        coordinates: availableSuppliers[selectedSupplier].coordinates,
+      };
+    }
+
+    // Save delivery details to store
+    setDeliveryDetails(deliveryDetails);
+
+    // Navigate to payment page
     navigate('/payment');
+  };
+
+  const renderMap = () => {
+    if (!selectedSupplier || !availableSuppliers[selectedSupplier]) return null;
+
+    return (
+      <GoogleMap
+        mapContainerStyle={mapContainerStyle}
+        center={availableSuppliers[selectedSupplier].coordinates}
+        zoom={17}
+        options={{
+          disableDefaultUI: true,
+          zoomControl: true,
+          streetViewControl: false,
+          mapTypeControl: false,
+          fullscreenControl: false
+        }}
+      >
+        {isMapLoaded && (
+          <Marker
+            position={availableSuppliers[selectedSupplier].coordinates}
+            title={selectedSupplier}
+            onClick={() => handleMarkerClick(selectedSupplier)}
+            icon={{
+              path: window.google.maps.SymbolPath.CIRCLE,
+              scale: 10,
+              fillColor: '#3b82f6',
+              fillOpacity: 1,
+              strokeColor: '#ffffff',
+              strokeWeight: 2,
+            }}
+          />
+        )}
+        {selectedMarker === selectedSupplier && isMapLoaded && (
+          <InfoWindow
+            position={availableSuppliers[selectedSupplier].coordinates}
+            onCloseClick={handleInfoWindowClose}
+          >
+            <div className="p-2">
+              <h3 className="font-medium text-base mb-1">{selectedSupplier}</h3>
+              <p className="text-sm text-gray-600">{availableSuppliers[selectedSupplier].address}</p>
+              <p className="text-sm text-gray-600 mt-1">{availableSuppliers[selectedSupplier].hours}</p>
+              <p className="text-sm text-gray-600 mt-1">{availableSuppliers[selectedSupplier].phone}</p>
+            </div>
+          </InfoWindow>
+        )}
+      </GoogleMap>
+    );
   };
 
   return (
@@ -52,7 +192,10 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required={shippingMethod !== 'pickup'}
                 />
               </div>
               <div>
@@ -61,7 +204,10 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required={shippingMethod !== 'pickup'}
                 />
               </div>
               <div className="md:col-span-2">
@@ -70,7 +216,10 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={street}
+                  onChange={(e) => setStreet(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required={shippingMethod !== 'pickup'}
                 />
               </div>
               <div>
@@ -79,7 +228,10 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required={shippingMethod !== 'pickup'}
                 />
               </div>
               <div>
@@ -87,7 +239,10 @@ const Checkout: React.FC = () => {
                   County
                 </label>
                 <select
+                  value={county}
+                  onChange={(e) => setCounty(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required={shippingMethod !== 'pickup'}
                 >
                   <option value="">Select County</option>
                   <option value="nairobi">Nairobi</option>
@@ -111,8 +266,11 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="tel"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                   placeholder="+254"
+                  required
                 />
               </div>
               <div>
@@ -121,7 +279,10 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                  required
                 />
               </div>
             </div>
@@ -140,6 +301,8 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={businessName}
+                  onChange={(e) => setBusinessName(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                 />
               </div>
@@ -149,6 +312,8 @@ const Checkout: React.FC = () => {
                 </label>
                 <input
                   type="text"
+                  value={kraPin}
+                  onChange={(e) => setKraPin(e.target.value)}
                   className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                 />
               </div>
@@ -257,17 +422,11 @@ const Checkout: React.FC = () => {
                       <div className="mt-6">
                         <h4 className="text-sm font-medium text-card-foreground mb-3">Location Map</h4>
                         <div className="rounded-lg overflow-hidden border border-border">
-                          <LoadScript googleMapsApiKey="AIzaSyAu8vkorkkjEBQCIZNwmacYmtNWdn8xWZs">
-                            <GoogleMap
-                              mapContainerStyle={mapContainerStyle}
-                              center={availableSuppliers[selectedSupplier].coordinates}
-                              zoom={15}
-                            >
-                              <Marker
-                                position={availableSuppliers[selectedSupplier].coordinates}
-                                title={selectedSupplier}
-                              />
-                            </GoogleMap>
+                          <LoadScript
+                            googleMapsApiKey="AIzaSyAu8vkorkkjEBQCIZNwmacYmtNWdn8xWZs"
+                            onLoad={handleMapLoad}
+                          >
+                            {renderMap()}
                           </LoadScript>
                         </div>
                         <div className="mt-3">
@@ -320,7 +479,7 @@ const Checkout: React.FC = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
                 <span className="text-card-foreground">
-                  {shippingMethod === 'pickup' ? 'Free' : `KSh ${shippingCost.toLocaleString()}`}
+                  {shippingMethod === 'pickup' ? 'Self-Pickup' : `KSh ${shippingCost.toLocaleString()}`}
                 </span>
               </div>
               <div className="flex justify-between font-medium text-lg pt-2 border-t border-border">

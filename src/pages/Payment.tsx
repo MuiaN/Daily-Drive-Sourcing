@@ -1,22 +1,38 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCartStore } from '../store/cartStore';
-import { CreditCard, Smartphone, Building2, Shield } from 'lucide-react';
+import { useCheckoutStore } from '../store/checkoutStore';
+import { CreditCard, Smartphone, Building2, Shield, MapPin } from 'lucide-react';
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
-  const { items } = useCartStore();
+  const { items, subtotal, deliveryDetails, setPaymentDetails } = useCheckoutStore();
   const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card' | 'bank'>('mpesa');
+  const [phoneNumber, setPhoneNumber] = useState(deliveryDetails?.contact.phone || '');
+  const [cardNumber, setCardNumber] = useState('');
+  const [cardExpiry, setCardExpiry] = useState('');
+  const [cardCvv, setCardCvv] = useState('');
+  const [bankReference, setBankReference] = useState('');
 
-  const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shippingCost = 500; // This should come from the checkout page
-  const total = subtotal + shippingCost;
+  const total = subtotal + (deliveryDetails?.cost || 0);
 
   const handlePayment = () => {
-    // This would normally process the payment
-    // For now, just navigate to confirmation
+    // Save payment details to store
+    setPaymentDetails({
+      method: paymentMethod,
+      phoneNumber: paymentMethod === 'mpesa' ? phoneNumber : undefined,
+      cardNumber: paymentMethod === 'card' ? cardNumber : undefined,
+      cardExpiry: paymentMethod === 'card' ? cardExpiry : undefined,
+      cardCvv: paymentMethod === 'card' ? cardCvv : undefined,
+      bankReference: paymentMethod === 'bank' ? bankReference : undefined,
+    });
+
+    // Navigate to confirmation
     navigate('/order-confirmation');
+    clearCart();
+    clearCheckout();
   };
+
+  if (!deliveryDetails) return null;
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -24,6 +40,61 @@ const Payment: React.FC = () => {
 
       <div className="grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          {/* Delivery Information */}
+          <div className="bg-card rounded-lg p-6 border border-border">
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-card-foreground">
+              <MapPin className="h-5 w-5 text-primary" />
+              Delivery Information
+            </h2>
+            <div className="space-y-4">
+              <div>
+                <span className="text-sm font-medium text-muted-foreground">Method:</span>
+                <span className="ml-2 text-card-foreground capitalize">
+                  {deliveryDetails.method === 'pickup' ? 'Self Pickup' : `${deliveryDetails.method} Delivery`}
+                </span>
+              </div>
+              
+              {deliveryDetails.address && (
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Delivery Address:</span>
+                  <p className="mt-1 text-card-foreground">
+                    {deliveryDetails.address.firstName} {deliveryDetails.address.lastName}<br />
+                    {deliveryDetails.address.street}<br />
+                    {deliveryDetails.address.city}, {deliveryDetails.address.county}
+                  </p>
+                </div>
+              )}
+
+              {deliveryDetails.pickupLocation && (
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Pickup Location:</span>
+                  <p className="mt-1 text-card-foreground">
+                    {deliveryDetails.pickupLocation.supplier}<br />
+                    {deliveryDetails.pickupLocation.address}
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <span className="text-sm font-medium text-muted-foreground">Contact:</span>
+                <p className="mt-1 text-card-foreground">
+                  Phone: {deliveryDetails.contact.phone}<br />
+                  Email: {deliveryDetails.contact.email}
+                </p>
+              </div>
+
+              {deliveryDetails.business && (
+                <div>
+                  <span className="text-sm font-medium text-muted-foreground">Business Details:</span>
+                  <p className="mt-1 text-card-foreground">
+                    {deliveryDetails.business.name}<br />
+                    KRA PIN: {deliveryDetails.business.kraPin}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Payment Methods */}
           <div className="bg-card rounded-lg p-6 border border-border">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-card-foreground">
@@ -98,6 +169,8 @@ const Payment: React.FC = () => {
                     type="tel"
                     className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                     placeholder="+254"
+                    value={phoneNumber}
+                    onChange={(e) => setPhoneNumber(e.target.value)}
                   />
                 </div>
               </div>
@@ -119,6 +192,8 @@ const Payment: React.FC = () => {
                     type="text"
                     className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                     placeholder="1234 5678 9012 3456"
+                    value={cardNumber}
+                    onChange={(e) => setCardNumber(e.target.value)}
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -130,6 +205,8 @@ const Payment: React.FC = () => {
                       type="text"
                       className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                       placeholder="MM/YY"
+                      value={cardExpiry}
+                      onChange={(e) => setCardExpiry(e.target.value)}
                     />
                   </div>
                   <div>
@@ -140,6 +217,8 @@ const Payment: React.FC = () => {
                       type="text"
                       className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
                       placeholder="123"
+                      value={cardCvv}
+                      onChange={(e) => setCardCvv(e.target.value)}
                     />
                   </div>
                 </div>
@@ -161,6 +240,18 @@ const Payment: React.FC = () => {
                   <p>Account Number: 1234567890</p>
                   <p>Branch: Nairobi</p>
                   <p>Swift Code: KCBLKENX</p>
+                </div>
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-muted-foreground mb-1">
+                    Bank Transfer Reference
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-2 rounded-lg border border-input bg-background text-foreground"
+                    placeholder="Enter your bank transfer reference"
+                    value={bankReference}
+                    onChange={(e) => setBankReference(e.target.value)}
+                  />
                 </div>
               </div>
             </div>
@@ -195,7 +286,9 @@ const Payment: React.FC = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Shipping</span>
-                <span className="text-card-foreground">KSh {shippingCost.toLocaleString()}</span>
+                <span className="text-card-foreground">
+                  {deliveryDetails.method === 'pickup' ? 'Self-Pickup' : `KSh ${deliveryDetails.cost.toLocaleString()}`}
+                </span>
               </div>
               <div className="flex justify-between font-medium text-lg pt-2 border-t border-border">
                 <span className="text-card-foreground">Total</span>

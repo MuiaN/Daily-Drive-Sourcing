@@ -28,12 +28,10 @@ const OrderConfirmation: React.FC = () => {
   };
 
   const handleViewOrder = () => {
-    clearCart();
     clearCheckout();
   };
 
   const handleContinueShopping = () => {
-    clearCart();
     clearCheckout();
   };
 

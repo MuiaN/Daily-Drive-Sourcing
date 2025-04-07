@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCheckoutStore } from '../store/checkoutStore';
+import { useCartStore } from '../store/cartStore';
 import { CreditCard, Smartphone, Building2, Shield, MapPin } from 'lucide-react';
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
-  const { items, subtotal, deliveryDetails, setPaymentDetails } = useCheckoutStore();
+  const { items, subtotal, deliveryDetails, paymentDetails, clearCheckout, setPaymentDetails } = useCheckoutStore();
+  const { clearCart } = useCartStore();
   const [paymentMethod, setPaymentMethod] = useState<'mpesa' | 'card' | 'bank'>('mpesa');
   const [phoneNumber, setPhoneNumber] = useState(deliveryDetails?.contact.phone || '');
   const [cardNumber, setCardNumber] = useState('');
   const [cardExpiry, setCardExpiry] = useState('');
   const [cardCvv, setCardCvv] = useState('');
   const [bankReference, setBankReference] = useState('');
+  
 
   const total = subtotal + (deliveryDetails?.cost || 0);
 
@@ -25,12 +28,13 @@ const Payment: React.FC = () => {
       cardCvv: paymentMethod === 'card' ? cardCvv : undefined,
       bankReference: paymentMethod === 'bank' ? bankReference : undefined,
     });
+    
 
     // Navigate to confirmation
     navigate('/order-confirmation');
+
     clearCart();
-    clearCheckout();
-  };
+    };
 
   if (!deliveryDetails) return null;
 

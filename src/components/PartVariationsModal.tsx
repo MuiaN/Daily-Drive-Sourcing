@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Shield, Package, Clock, MapPin, Star, AlertTriangle, Building2, Phone, Mail, Globe, Award, CheckCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useCartStore } from '../store/cartStore';
+import { useScrollLock } from '../hooks/useScrollLock';
 import AuthModal from './AuthModal';
 
 interface PartVariation {
@@ -54,6 +55,9 @@ const PartVariationsModal: React.FC<Props> = ({
   const [expandedVariations, setExpandedVariations] = useState<string[]>([]);
   const { user } = useAuthStore();
   const { addItem } = useCartStore();
+
+  // Lock scroll when modal is open
+  useScrollLock(isOpen);
 
   if (!isOpen) return null;
 
@@ -229,20 +233,18 @@ const PartVariationsModal: React.FC<Props> = ({
                     {expandedVariations.includes(variation.id) && (
                       <div className="mt-4 pt-4 border-t border-border">
                         <div className="grid md:grid-cols-2 gap-4">
-                          <div className="space-y-3">
-                            <div>
-                              <div className="text-sm font-medium text-card-foreground">Part Details</div>
-                              <div className="space-y-1 text-sm text-muted-foreground">
-                                <p>Part Number: {variation.partNumber}</p>
-                                {variation.warranty && <p>Warranty: {variation.warranty}</p>}
-                                {variation.condition && <p>Condition: {variation.condition}</p>}
-                                {variation.qualityScore && <p>Quality Score: {variation.qualityScore}/10</p>}
-                              </div>
+                          <div>
+                            <h4 className="font-medium text-card-foreground">Part Details</h4>
+                            <div className="text-sm text-muted-foreground">
+                              <p>Part Number: {variation.partNumber}</p>
+                              {variation.warranty && <p>Warranty: {variation.warranty}</p>}
+                              {variation.condition && <p>Condition: {variation.condition}</p>}
+                              {variation.qualityScore && <p>Quality Score: {variation.qualityScore}/10</p>}
                             </div>
                             {variation.certification && variation.certification.length > 0 && (
-                              <div>
-                                <div className="text-sm font-medium text-card-foreground">Certifications</div>
-                                <div className="flex flex-wrap gap-2 mt-1">
+                              <div className="mt-4">
+                                <h4 className="font-medium text-card-foreground mb-2">Certifications</h4>
+                                <div className="flex flex-wrap gap-2">
                                   {variation.certification.map((cert, index) => (
                                     <span
                                       key={index}
@@ -256,7 +258,7 @@ const PartVariationsModal: React.FC<Props> = ({
                             )}
                           </div>
 
-                          <div className="space-y-4">
+                          <div>
                             <div className="bg-muted/50 rounded-lg p-4">
                               <div className="flex items-center justify-between mb-3">
                                 <span className="text-lg font-semibold text-primary">

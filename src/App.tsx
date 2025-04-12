@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LoadingProvider } from './contexts/LoadingContext';
 import Layout from './components/Layout';
 import ScrollToTop from './components/ScrollToTop';
+import BackToTop from './components/BackToTop';
 import Home from './pages/Home';
 import Orders from './pages/Orders';
 import Notifications from './pages/Notifications';
@@ -37,10 +39,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
-function App() {
+function AppRoutes() {
   return (
-    <BrowserRouter>
+    <>
       <ScrollToTop />
+      <BackToTop />
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
@@ -106,6 +109,16 @@ function App() {
           />
         </Route>
       </Routes>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <LoadingProvider>
+        <AppRoutes />
+      </LoadingProvider>
     </BrowserRouter>
   );
 }
